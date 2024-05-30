@@ -1,8 +1,9 @@
-static const int screenWidth = 800;
-static const int screenHeight = 450;
+#include "game.h"
 
 int main(void)
 {
-
+    Game g;
+    g.setScreen(std::make_unique<Screen::HomeScreen>());
+    g.run();
     return 0;
 }

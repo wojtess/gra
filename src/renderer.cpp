@@ -7,52 +7,76 @@ namespace Renderer {
         return this->pos;
     }
 
-    RaylibRenderer::RaylibRenderer(std::string title, int width, int height) {
-        InitWindow(width, height, title.c_str());
+    Theme::Theme(Color hover, Color bg, Color textColor): hover(hover), bg(bg), textColor(textColor) {}
+    
+    Color Theme::getHover() const {
+        return hover;
     }
 
-    void RaylibRenderer::setFPS(int fps) {
-        SetTargetFPS(fps);
+    Color Theme::getBg() const {
+        return bg;
     }
 
-    void RaylibRenderer::render(Renderable2DList& list, RenderableHudList& hud, std::unique_ptr<Renderable>& background) {
-        BeginDrawing();
-
-            ClearBackground(WHITE);
-
-            background->render();
-
-            BeginMode2D(this->camera);
-            {
-                auto it = list.begin();
-                while(it != list.end()) {
-                    if(auto renderable = it->lock()) {
-                        rlPushMatrix();
-                        rlTranslatef(renderable->getPos().x, renderable->getPos().y, 0);
-                        renderable->render();
-                        rlPopMatrix();
-                    } else {
-                        list.erase(it);
-                    }
-                }
-            }
-            EndMode2D();
-
-            {
-                auto it = hud.begin();
-                while(it != hud.end()) {
-                    if(auto renderable = it->lock()) {
-                        renderable->render();
-                    } else {
-                        hud.erase(it);
-                    }
-                }
-            }
-
-        EndDrawing();
+    Color Theme::getTextColor() const {
+        return textColor;
     }
 
-    RaylibRenderer::~RaylibRenderer() {
+    // RaylibRenderer::RaylibRenderer(std::string title, int width, int height) {
+    //     InitWindow(width, height, title.c_str());
+    // }
 
-    }
+    // void RaylibRenderer::setFPS(int fps) {
+    //     SetTargetFPS(fps);
+    // }
+
+    // void RaylibRenderer::render() {
+    //     BeginDrawing();
+
+    //         ClearBackground(WHITE);
+
+    //         //check if bg is null, it is important, beacuse can pass tests when bg is not null and crash on prod when bg
+    //         if(background)
+    //             background->render();
+
+    //         //begin camera 2d mode, it is important to use 2d camera beacuse it is calculated in GPU rather thatn CPU
+    //         BeginMode2D(this->camera);
+    //         {
+    //             //render all objects that are on map and then delete all that are no longer in use
+                
+    //         }
+    //         EndMode2D();
+
+    //         //render hud, hud need to be on top of everything and without position relative to map so after EndMode2D() and last
+            
+
+    //     EndDrawing();
+    // }
+
+    // std::unique_ptr<AbstractRenderer::AbstractCamera2DLock> RaylibRenderer::get2DModeLock() const {
+    //     return std::make_unique<RaylibRenderer::RaylibCamera2DLock>(this->camera);
+    // }
+
+    // std::unique_ptr<AbstractRenderer::AbstractRendererLock> RaylibRenderer::getRendererLock() const {
+    //     return std::make_unique<RaylibRenderer::RaylibRendererLock>();
+    // }
+
+    // RaylibRenderer::~RaylibRenderer() {
+        
+    // }
+
+    // RaylibRenderer::RaylibCamera2DLock::RaylibCamera2DLock(Camera2D camera):camera(camera) {
+    //     BeginMode2D(camera);
+    // }
+
+    // RaylibRenderer::RaylibCamera2DLock::~RaylibCamera2DLock() {
+    //     EndMode2D();
+    // }
+
+    // RaylibRenderer::RaylibRendererLock::RaylibRendererLock() {
+    //     BeginDrawing();
+    // }
+
+    // RaylibRenderer::RaylibRendererLock::~RaylibRendererLock() {
+    //     EndDrawing();
+    // }
 }

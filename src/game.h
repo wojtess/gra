@@ -1,11 +1,13 @@
+#pragma once
+#include "screen.h"
 #include "renderer.h"
+#include <memory>
 
 class Game {
     private:
-    Renderer::Renderable2DList objects2D;
-    Renderer::RenderableHudList hud;
-    std::unique_ptr<Renderer::Renderable> background;
-    
+    std::unique_ptr<Screen::AbstractScreen> screen;
     public:
+    void setScreen(std::unique_ptr<Screen::AbstractScreen>);
+
     void run();
 };

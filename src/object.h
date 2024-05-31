@@ -1,3 +1,4 @@
+#pragma once
 #include "renderer.h"
 #include <functional>
 #include <string>
@@ -6,7 +7,23 @@ class PhysicsObject: public Renderer::Renderable2DObject {
     protected:
     Vector2 vel;
     Vector2 accel;
+    public:
 };
+
+namespace Entity {
+    class Zombie: public PhysicsObject {
+        public:
+        Zombie(Vector2 pos);
+        void render() override;
+    };
+    class Player: public PhysicsObject {
+        public:
+        Player(Vector2 pos);
+        void render() override;
+    };
+
+    class DropedItem: PhysicsObject {};
+}
 
 namespace Hud {
     class Button: public Renderer::Renderable {

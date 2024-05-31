@@ -1,16 +1,29 @@
 #include "screen.h"
 #include "object.h"
+#include "game.h"
+#include "rlgl.h"
 
 namespace Screen {
     void HomeScreen::render(Game& game) {
-        Hud::Button button([]() {
+        auto width = GetScreenWidth();
+        auto height = GetScreenHeight();
+        
+        Hud::Button buttonExit([]() {
             exit(0);
-        }, "Exit", {0,0}, {200, 200}, 20);
+        }, "Exit", {20, 20}, {200, 100}, 20);
+
+        Hud::Button buttonPlay([&game]() {
+            game.setScreen(std::make_unique<Screen::GameScreen>());
+        }, "Play", {100, 100}, {200, 100}, 20);
+
+        Hud::Label name("nazwa gry", {width / 2.0, 100}, Renderer::DEFAULT_TEHEME.getTextColor(), 20);
 
         BeginDrawing();
-        ClearBackground(GRAY);
+        ClearBackground(Color{187, 205, 229, 255});
 
-        button.render();
+        name.render();
+        buttonExit.render();
+        buttonPlay.render();
         
         EndDrawing();
     }
@@ -41,15 +54,23 @@ namespace Screen {
         //         }
         //     }
         // }
-        // Hud::Button button([]() {
-        //     printf("asd\n");
-        // }, "asd", {0,0}, {200, 200}, 20);
-        // BeginDrawing();
-        // ClearBackground(RAYWHITE);
+        Hud::Button button([&game]() {
+            game.setScreen(std::make_unique<Screen::HomeScreen>());
+        }, "back", {0,0}, {200, 200}, 20);
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
 
         // button.render();
 
-        // EndDrawing();
+        for(const auto& entity:game.getEntitys()) {
+            rlPushMatrix();
+                auto pos = entity->getPos();
+                rlTranslatef(pos.x, pos.y, 0);
+                entity->render();
+            rlPopMatrix();
+        }
+
+        EndDrawing();
     }
 
     GameScreen::GameScreen() {

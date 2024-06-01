@@ -12,7 +12,41 @@ void Game::run() {
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{100.0f, 100.0f})));
 
     while(true) {
-        {
+            {
+                if(this->player) {
+                //tick world and shit
+                {
+                    Vector2 accel = {0.0f, 0.0f};
+                    if(IsKeyDown(KEY_A)) {
+                        accel.x -= 1;
+                    }
+                    if(IsKeyDown(KEY_D)) {
+                        accel.x += 1;
+                    }
+                    if(IsKeyDown(KEY_W)) {
+                        accel.y -= 1;
+                    }
+                    if(IsKeyDown(KEY_S)) {
+                        accel.y += 1;
+                    }
+                    //normalize vector
+                    float len = sqrt(accel.x * accel.x + accel.y * accel.y);
+                    Vector2 accel1 = {0};
+                    float accelMultplayer = 1000.0f;
+                    if(len != 0) {
+                        accel1.x = (accel.x / len) * accelMultplayer;
+                        accel1.y = (accel.y / len) * accelMultplayer;
+                    }
+                    this->player->setAccel(accel1);
+                    this->player->tick();
+                }
+
+                for(const auto& entity:entitys) {
+                    entity->tick();
+                }
+            }
+
+
             //begin drawning raylib
             BeginDrawing();
             //clear background is needed for using some debug/imgui rendering when screen is null, every screen is probably have some other bg
@@ -27,49 +61,23 @@ void Game::run() {
             {
                 ImGui::Begin("debug");
                 if(player) {
+                    int colliding = 0;
+                    for(const auto& entity:entitys) {
+                        if(player->isColliding(entity.get()))
+                            colliding++;
+                    }
                     ImGui::Text("player pos: x:%f, y:%f", player->getPos().x, player->getPos().y);
                     ImGui::Text("player vel: x:%f, y:%f", player->getVel().x, player->getVel().y);
                     ImGui::Text("player accel: x:%f, y:%f", player->getAccel().x, player->getAccel().y);
+                    ImGui::Text("player colliding: %d", colliding);
                 }
                 ImGui::End();
             }
             
-
-
             //end drawning imgui
             rlImGuiEnd();
             //end drawning raylib
             EndDrawing();
-        }
-        
-
-        if(this->player) {
-            //tick world and shit
-            {
-                Vector2 accel = {0.0f, 0.0f};
-                if(IsKeyDown(KEY_A)) {
-                    accel.x -= 1;
-                }
-                if(IsKeyDown(KEY_D)) {
-                    accel.x += 1;
-                }
-                if(IsKeyDown(KEY_W)) {
-                    accel.y -= 1;
-                }
-                if(IsKeyDown(KEY_S)) {
-                    accel.y += 1;
-                }
-                //normalize vector
-                float len = sqrt(accel.x * accel.x + accel.y * accel.y);
-                Vector2 accel1 = {0};
-                float accelMultplayer = 1000;
-                if(len != 0) {
-                    accel1.x = (accel.x / len) * accelMultplayer;
-                    accel1.y = (accel.y / len) * accelMultplayer;
-                }
-                this->player->setAccel(accel1);
-                this->player->tick();
-            }
         }
 
     }

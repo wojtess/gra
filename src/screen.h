@@ -19,7 +19,8 @@ class HomeScreen: public AbstractScreen {
 
 class GameScreen: public AbstractScreen {
     private:
-    
+    Camera2D camera;
+
     public:
     GameScreen();
     void render(Game&) override;

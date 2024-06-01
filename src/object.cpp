@@ -1,12 +1,48 @@
 #include "object.h"
 #include "utils.h"
 #include "math.h"
+#include "raymath.h"
 
-PhysicsObject::PhysicsObject(float dumpingFactor): dumpingFactor(dumpingFactor) {
+namespace Shape {
+    
+    Circle::Circle(float radius): radius(radius) {
+
+    }
+
+    bool Circle::isColliding(const std::unique_ptr<AbstractShape>& other) {
+        Circle* circle = (Circle*)other.get();
+        if(circle) {
+            if(Vector2Distance(pos, circle->pos) <= radius + circle->radius) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    std::vector<Vector2> Circle::getVertices(std::unique_ptr<AbstractShape>& other) {
+        return {};
+    }
+
+    void Circle::setPos(Vector2 pos) {
+        this->pos = pos;
+    }
+
+    bool Shape::isColliding(const std::unique_ptr<AbstractShape>& other) {
+
+        return false;
+    }
+
+    std::vector<Vector2> Shape::getVertices(std::unique_ptr<AbstractShape>& other) {
+        return {};
+    }
 
 }
 
-PhysicsObject::PhysicsObject(): dumpingFactor(10) {
+PhysicsObject::PhysicsObject(float dumpingFactor): dumpingFactor(dumpingFactor), vel(Vector2{0.0f, 0.0f}) {
+
+}
+
+PhysicsObject::PhysicsObject(): dumpingFactor(10.0f), vel(Vector2{0.0f, 0.0f}) {
 
 }
 
@@ -39,19 +75,47 @@ void PhysicsObject::tick() {
 
     pos.x += vel.x * GetFrameTime();
     pos.y += vel.y * GetFrameTime();
+
+    for(auto& shape : shapes) {
+        shape->setPos(pos);
+    }
+}
+
+bool PhysicsObject::isColliding(const PhysicsObject& other) {
+    for(const auto& shape : shapes) {
+        for(const auto& otherShape:other.shapes) {
+            if(shape->isColliding(otherShape)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool PhysicsObject::isColliding(const PhysicsObject* other) {
+    for(const auto& shape : shapes) {
+        for(auto& otherShape:other->shapes) {
+            if(shape->isColliding(otherShape)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 namespace Entity {
     Zombie::Zombie(Vector2 pos) {
         this->pos = pos;
+        shapes.push_back(std::make_unique<Shape::Circle>(10.0f));
     }
 
     void Zombie::render() {
         DrawCircle(0, 0, 10, RED);
     }
 
-    Player::Player(Vector2 pos): PhysicsObject(10) {
+    Player::Player(Vector2 pos): PhysicsObject(8.f) {
         this->pos = pos;
+        shapes.push_back(std::make_unique<Shape::Circle>(10.0f));
     }
 
     void Player::render() {

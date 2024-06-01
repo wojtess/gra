@@ -2,11 +2,45 @@
 #include "renderer.h"
 #include <functional>
 #include <string>
+#include <vector>
+
+namespace Shape {
+
+    class AbstractShape {
+        public:
+        virtual bool isColliding(const std::unique_ptr<AbstractShape>&) = 0;
+        virtual std::vector<Vector2> getVertices(std::unique_ptr<AbstractShape>&) = 0;
+        virtual void setPos(Vector2) = 0;
+        virtual ~AbstractShape() = default;
+    };
+
+    class Circle: public AbstractShape {
+        private:
+        Vector2 pos;
+        float radius;
+        public:
+        Circle(float radius);
+        bool isColliding(const std::unique_ptr<AbstractShape>&);
+        std::vector<Vector2> getVertices(std::unique_ptr<AbstractShape>&) override;
+        void setPos(Vector2);
+    };
+
+    class Shape: public AbstractShape {
+        private:
+        std::vector<Vector2> vertices;
+        Vector2 offset;
+        public:
+        bool isColliding(const std::unique_ptr<AbstractShape>&);
+        std::vector<Vector2> getVertices(std::unique_ptr<AbstractShape>&) override;
+    };
+
+}
 
 class PhysicsObject: public Renderer::Renderable2DObject {
     protected:
     Vector2 vel;
     Vector2 accel;
+    std::vector<std::unique_ptr<Shape::AbstractShape>> shapes;
 
     float dumpingFactor;
     void applyFrixion();
@@ -19,6 +53,9 @@ class PhysicsObject: public Renderer::Renderable2DObject {
     Vector2 getVel() const;
     void setAccel(Vector2);
     Vector2 getAccel() const;
+
+    bool isColliding(const PhysicsObject& other);
+    bool isColliding(const PhysicsObject* other);
 
     //dont pass any time, beacuse raylib have intergated function for that
     virtual void tick();

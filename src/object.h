@@ -83,6 +83,7 @@ class Building: public PhysicsObject {
     Color color;
     public:
         Building(std::vector<Vector2> vertices, Color color);
+        Building(std::vector<Vector2> vertices, Color color, Vector2 pos);
         void render() override;
 };
 

@@ -1,0 +1,6 @@
+[submodule "libs/rlImGui"]
+	path = libs/rlImGui
+	url = https://github.com/raylib-extras/rlImGui
+[submodule "libs/imgui"]
+	path = libs/imgui
+	url = https://github.com/ocornut/imgui

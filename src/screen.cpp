@@ -40,14 +40,9 @@ namespace Screen {
         }, "back", {0,0}, {200, 200}, 20);
 
         // button.render();
-
-        Camera2D camera = {0};
+        //width / 2.0f, height / 2.0f
+        Camera2D camera = {Vector2{width / 2.0f, height / 2.0f}, Vector2{0.0f, 0.0f}, 0.0f, 2.0f};
         camera.target = game.getPlayer()->getPos();
-
-        rlPushMatrix();
-            rlTranslatef(width / 2.0f, height / 2.0f, 0);
-            game.getPlayer()->render();
-        rlPopMatrix();
 
         BeginMode2D(camera);
             for(const auto& entity:game.getEntitys()) {
@@ -57,7 +52,13 @@ namespace Screen {
                     entity->render();
                 rlPopMatrix();
             }
+        rlPushMatrix();
+            rlTranslatef(game.getPlayer()->getPos().x, game.getPlayer()->getPos().y, 0);
+            game.getPlayer()->render();
+        rlPopMatrix();
         EndMode2D();
+
+        
     }
 
     GameScreen::GameScreen() {

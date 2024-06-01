@@ -6,6 +6,8 @@
 class PhysicsObject: public Renderer::Renderable2DObject {
     protected:
     Vector2 vel;
+    Vector2 accel;
+
     float dumpingFactor;
     void applyFrixion();
 
@@ -15,6 +17,8 @@ class PhysicsObject: public Renderer::Renderable2DObject {
 
     void setVel(Vector2);
     Vector2 getVel() const;
+    void setAccel(Vector2);
+    Vector2 getAccel() const;
 
     //dont pass any time, beacuse raylib have intergated function for that
     virtual void tick();

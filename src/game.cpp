@@ -9,7 +9,7 @@ void Game::run() {
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     rlImGuiSetup(true);
 
-    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{10.0f, 10.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{100.0f, 100.0f})));
 
     while(true) {
         {
@@ -29,6 +29,7 @@ void Game::run() {
                 if(player) {
                     ImGui::Text("player pos: x:%f, y:%f", player->getPos().x, player->getPos().y);
                     ImGui::Text("player vel: x:%f, y:%f", player->getVel().x, player->getVel().y);
+                    ImGui::Text("player accel: x:%f, y:%f", player->getAccel().x, player->getAccel().y);
                 }
                 ImGui::End();
             }
@@ -45,27 +46,28 @@ void Game::run() {
         if(this->player) {
             //tick world and shit
             {
-                Vector2 velAdded = {0.0f, 0.0f};
+                Vector2 accel = {0.0f, 0.0f};
                 if(IsKeyDown(KEY_A)) {
-                    velAdded.x -= 1;
+                    accel.x -= 1;
                 }
                 if(IsKeyDown(KEY_D)) {
-                    velAdded.x += 1;
+                    accel.x += 1;
                 }
                 if(IsKeyDown(KEY_W)) {
-                    velAdded.y -= 1;
+                    accel.y -= 1;
                 }
                 if(IsKeyDown(KEY_S)) {
-                    velAdded.y += 1;
+                    accel.y += 1;
                 }
                 //normalize vector
-                float len = sqrt(velAdded.x * velAdded.x + velAdded.y * velAdded.y);
+                float len = sqrt(accel.x * accel.x + accel.y * accel.y);
+                Vector2 accel1 = {0};
+                float accelMultplayer = 1000;
                 if(len != 0) {
-                    Vector2 vel = this->player->getVel();
-                    vel.x += velAdded.x / len;
-                    vel.y += velAdded.y / len;
-                    this->player->setVel(vel);
+                    accel1.x = (accel.x / len) * accelMultplayer;
+                    accel1.y = (accel.y / len) * accelMultplayer;
                 }
+                this->player->setAccel(accel1);
                 this->player->tick();
             }
         }

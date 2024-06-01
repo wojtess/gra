@@ -18,12 +18,23 @@ Vector2 PhysicsObject::getVel() const {
     return vel;
 }
 
+void PhysicsObject::setAccel(Vector2 accel) {
+    this->accel = accel;
+}
+
+Vector2 PhysicsObject::getAccel() const {
+    return this->accel;
+}
+
 void PhysicsObject::applyFrixion() {
     vel.x *= exp(-dumpingFactor * GetFrameTime());
     vel.y *= exp(-dumpingFactor * GetFrameTime());
 }
 
 void PhysicsObject::tick() {
+    vel.x += accel.x * GetFrameTime();
+    vel.y += accel.y * GetFrameTime();
+
     applyFrixion();
 
     pos.x += vel.x * GetFrameTime();

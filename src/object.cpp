@@ -1,5 +1,34 @@
 #include "object.h"
 #include "utils.h"
+#include "math.h"
+
+PhysicsObject::PhysicsObject(float dumpingFactor): dumpingFactor(dumpingFactor) {
+
+}
+
+PhysicsObject::PhysicsObject(): dumpingFactor(10) {
+
+}
+
+void PhysicsObject::setVel(Vector2 vel) {
+    this->vel = vel;
+}
+
+Vector2 PhysicsObject::getVel() const {
+    return vel;
+}
+
+void PhysicsObject::applyFrixion() {
+    vel.x *= exp(-dumpingFactor * GetFrameTime());
+    vel.y *= exp(-dumpingFactor * GetFrameTime());
+}
+
+void PhysicsObject::tick() {
+    applyFrixion();
+
+    pos.x += vel.x * GetFrameTime();
+    pos.y += vel.y * GetFrameTime();
+}
 
 namespace Entity {
     Zombie::Zombie(Vector2 pos) {
@@ -10,7 +39,7 @@ namespace Entity {
         DrawCircle(0, 0, 10, RED);
     }
 
-    Player::Player(Vector2 pos) {
+    Player::Player(Vector2 pos): PhysicsObject(10) {
         this->pos = pos;
     }
 

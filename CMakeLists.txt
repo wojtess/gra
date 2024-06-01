@@ -23,8 +23,15 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
   endif()
 endif()
 
+file(GLOB ImGui_Src libs/imgui/*.cpp libs/imgui/backends/imgui_impl_glfw.cpp libs/imgui/backends/imgui_impl_opengl3.cpp libs/ImGuiFileDialog/ImGuiFileDialog.cpp libs/rlImGui/*.cpp)
+
 # Our Project
-add_executable(${PROJECT_NAME})
+add_executable(${PROJECT_NAME}
+  ${ImGui_Src}
+  )
+  
+target_include_directories(${PROJECT_NAME} PRIVATE "libs/rlImGui")
+target_include_directories(${PROJECT_NAME} PRIVATE "libs/imgui")
 add_subdirectory(src)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

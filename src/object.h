@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 
-namespace Shape {
+namespace Shapes {
 
     class AbstractShape {
         public:
         virtual bool isColliding(const std::unique_ptr<AbstractShape>&) = 0;
-        virtual std::vector<Vector2> getVertices(std::unique_ptr<AbstractShape>&) = 0;
+        virtual std::vector<Vector2> getVertices() = 0;
         virtual void setPos(Vector2) = 0;
         virtual ~AbstractShape() = default;
     };
@@ -21,7 +21,7 @@ namespace Shape {
         public:
         Circle(float radius);
         bool isColliding(const std::unique_ptr<AbstractShape>&);
-        std::vector<Vector2> getVertices(std::unique_ptr<AbstractShape>&) override;
+        std::vector<Vector2> getVertices() override;
         void setPos(Vector2);
     };
 
@@ -30,8 +30,10 @@ namespace Shape {
         std::vector<Vector2> vertices;
         Vector2 offset;
         public:
+        Shape(std::vector<Vector2> vertices);
         bool isColliding(const std::unique_ptr<AbstractShape>&);
-        std::vector<Vector2> getVertices(std::unique_ptr<AbstractShape>&) override;
+        std::vector<Vector2> getVertices() override;
+        void setPos(Vector2);
     };
 
 }
@@ -40,7 +42,7 @@ class PhysicsObject: public Renderer::Renderable2DObject {
     protected:
     Vector2 vel;
     Vector2 accel;
-    std::vector<std::unique_ptr<Shape::AbstractShape>> shapes;
+    std::vector<std::unique_ptr<Shapes::AbstractShape>> shapes;
 
     float dumpingFactor;
     void applyFrixion();
@@ -75,6 +77,14 @@ namespace Entity {
 
     class DropedItem: PhysicsObject {};
 }
+
+class Building: public PhysicsObject {
+    private:
+    Color color;
+    public:
+        Building(std::vector<Vector2> vertices, Color color);
+        void render() override;
+};
 
 namespace Hud {
     class Button: public Renderer::Renderable {

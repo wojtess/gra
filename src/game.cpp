@@ -3,14 +3,17 @@
 #include <math.h>
 #include "rlImGui.h"
 #include "imgui.h"
+#include "item.h"
+#include <optional>
 
 void Game::run() {
     InitWindow(1280, 720, "game");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     rlImGuiSetup(true);
 
-    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{100.0f, 100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{20.0f, 20.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, RED)));
+    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{100.0f, 100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{20.0f, 20.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, RED)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::GunItem>(), Vector2{-100.0f, -100.0f})));
 
     while(true) {
         if(this->player) {

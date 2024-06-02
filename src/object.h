@@ -1,5 +1,6 @@
 #pragma once
 #include "renderer.h"
+#include "item.h"
 #include <functional>
 #include <string>
 #include <vector>
@@ -46,6 +47,7 @@ class PhysicsObject: public Renderer::Renderable2DObject {
     Vector2 vel;
     Vector2 accel;
     std::vector<std::unique_ptr<Shapes::AbstractShape>> shapes;
+    bool physicsOn;
 
     float dumpingFactor;
     void applyFrixion();
@@ -75,12 +77,20 @@ namespace Entity {
         void render() override;
     };
     class Player: public PhysicsObject {
+        private:
+        std::unique_ptr<Items::AbstractItem> items[6];
         public:
         Player(Vector2 pos);
         void render() override;
     };
 
-    class DropedItem: PhysicsObject {};
+    class DropedItem: public PhysicsObject {
+        private:
+        std::unique_ptr<Items::AbstractItem> item;
+        public:
+        DropedItem(std::unique_ptr<Items::AbstractItem>, Vector2);
+        void render() override;
+    };
 }
 
 class Building: public PhysicsObject {

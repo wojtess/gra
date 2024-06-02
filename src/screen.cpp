@@ -44,21 +44,36 @@ namespace Screen {
         camera.offset = Vector2{width / 2.0f, height / 2.0f};
         camera.target = game.getPlayer()->getPos();
 
-        auto b = Vector2Add(game.getPlayer()->getPos(), Vector2Scale(Vector2Subtract(GetMousePosition(), camera.offset), 1.0f/camera.zoom));
-        auto a = game.getPlayer()->getPos();
 
+        auto mousePos = Vector2Add(game.getPlayer()->getPos(), Vector2Scale(Vector2Subtract(GetMousePosition(), camera.offset), 1.0f/camera.zoom));
+        struct rayCastData_t {
+            std::shared_ptr<PhysicsObject> object;
+            Vector2 pos;
+        };
+        std::optional<rayCastData_t> objectOnCoursor;
+        {
+            auto origin = game.getPlayer()->getPos();
 
-        BeginMode2D(camera);
-            for(const auto& entity:game.getEntitys()) {
-                auto point = entity->getIntersectionPoint(a, b);
+            float len = std::numeric_limits<float>::max();
+            for(auto entity:game.getEntitys()) {
+                auto point = entity->getIntersectionPoint(origin, mousePos);
                 if(point) {
-                    DrawLineEx(a, *point, 1.0f, BLUE);
-                    goto lineFound;
+                    auto len0 = Vector2DistanceSqr(origin, entity->getPos());
+                    if(len > len0) {
+                        objectOnCoursor = rayCastData_t{entity, *point};
+                        len = len0;
+                    } 
                 }
             }
-            DrawLineEx(a, b, 1.0f, GREEN);
-            lineFound:
-            
+        }
+
+        BeginMode2D(camera);
+
+            if(objectOnCoursor) {
+                DrawLineEx(game.getPlayer()->getPos(), (*objectOnCoursor).pos, 1.0f, RED);
+            } else {
+                DrawLineEx(game.getPlayer()->getPos(), Vector2Add(Vector2Scale(Vector2Normalize(Vector2Subtract(mousePos, game.getPlayer()->getPos())), 1000.0f), game.getPlayer()->getPos()), 1.0f, GREEN);
+            }
 
             for(const auto& entity:game.getEntitys()) {
                 rlPushMatrix();

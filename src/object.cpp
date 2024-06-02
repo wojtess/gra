@@ -153,11 +153,11 @@ namespace Shapes {
 
 }
 
-PhysicsObject::PhysicsObject(float dumpingFactor): dumpingFactor(dumpingFactor), vel(Vector2{0.0f, 0.0f}), accel(Vector2{0.0f, 0.0f}) {
+PhysicsObject::PhysicsObject(float dumpingFactor): dumpingFactor(dumpingFactor), vel(Vector2{0.0f, 0.0f}), accel(Vector2{0.0f, 0.0f}), physicsOn(true) {
     pos = { 0 };
 }
 
-PhysicsObject::PhysicsObject(): dumpingFactor(10.0f), vel(Vector2{0.0f, 0.0f}), accel(Vector2{0.0f, 0.0f}) {
+PhysicsObject::PhysicsObject(): dumpingFactor(10.0f), vel(Vector2{0.0f, 0.0f}), accel(Vector2{0.0f, 0.0f}), physicsOn(true) {
     pos = { 0 };
 }
 
@@ -197,8 +197,13 @@ void PhysicsObject::tick(std::vector<std::shared_ptr<PhysicsObject>> entitys) {
         for(auto& entity:entitys) {
             if(entity.get() == this) {
                 //dont check collisions with itself
-                break;
+                continue;
             }
+            if(!entity->physicsOn) {
+                //some object can have physics disabled, but still have boundix boxes(items)
+                continue;
+            }
+
             for(auto& otherShape:entity->shapes) {
                 if(auto vec = shape->isColliding(otherShape)) {
                     Vector2 normal = Vector2Normalize(*vec);
@@ -218,19 +223,6 @@ void PhysicsObject::tick(std::vector<std::shared_ptr<PhysicsObject>> entitys) {
     for(auto& shape : shapes) {
         shape->setPos(pos);
     }
-}
-
-bool PhysicsObject::isColliding(const PhysicsObject& other) {
-    //check for collisions for every shape in current object and in "other" object
-    //but moslt it is only one shape per object
-    for(const auto& shape : shapes) {
-        for(const auto& otherShape:other.shapes) {
-            if(shape->isColliding(otherShape)) {
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 std::optional<Vector2> PhysicsObject::getIntersectionPoint(Vector2 origin, Vector2 end) {
@@ -283,6 +275,19 @@ std::optional<Vector2> PhysicsObject::getIntersectionPoint(Vector2 origin, Vecto
     return {};
 }
 
+bool PhysicsObject::isColliding(const PhysicsObject& other) {
+    //check for collisions for every shape in current object and in "other" object
+    //but moslt it is only one shape per object
+    for(const auto& shape : shapes) {
+        for(const auto& otherShape:other.shapes) {
+            if(shape->isColliding(otherShape)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 bool PhysicsObject::isColliding(const PhysicsObject* other) {
     //same as PhysicsObject::isColliding(const PhysicsObject&), but for pointer
     for(const auto& shape : shapes) {
@@ -313,6 +318,16 @@ namespace Entity {
     void Player::render() {
         DrawCircle(0, 0, 10, BLUE);
     }
+
+    DropedItem::DropedItem(std::unique_ptr<Items::AbstractItem> item, Vector2 pos): item(std::move(item)) {
+        this->pos = pos;
+        shapes.push_back(std::make_unique<Shapes::Circle>(20.0f));
+        physicsOn = false;
+    }
+
+    void DropedItem::render() {
+        item->render();
+    }
 }
 
 Building::Building(std::vector<Vector2> vertices, Color color): color(color) {
@@ -338,26 +353,6 @@ void Building::render() {
         }
         DrawTriangle(v1, v2, v3, color);
     }
-
-    // {
-    //     Vector2 edge = Vector2Subtract(vertices[vertices.size() - 1], vertices[0]);
-    //     Vector2 perpendiuclar = Vector2Normalize(Vector2{-edge.y, edge.x});
-    //     Vector2 b = Vector2Add(Vector2Add(Vector2Scale(perpendiuclar, 100.0f), vertices[0]), Vector2Scale(edge, 0.5f));
-    //     Vector2 a = Vector2Add(vertices[0], Vector2Scale(edge, 0.5f));
-    //     DrawLineEx(a, b, 2.0f, BLUE);
-    // }
-
-    // for (size_t i = 1; i < vertices.size(); i++) {
-    //     Vector2 edge = Vector2Subtract(vertices[i - 1], vertices[i]);
-    //     Vector2 perpendiuclar = Vector2Normalize(Vector2{-edge.y, edge.x});
-    //     Vector2 b = Vector2Add(Vector2Add(Vector2Scale(perpendiuclar, 100.0f), vertices[i]), Vector2Scale(edge, 0.5f));
-    //     Vector2 a = Vector2Add(vertices[i], Vector2Scale(edge, 0.5f));
-    //     DrawLineEx(a, b, 2.0f, BLUE);
-    // }
-
-    // for(int i = 0;i < vertices.size(); i++) {
-    //     DrawText(TextFormat("%d", i), vertices[i].x, vertices[i].y, 40, BLUE);
-    // }
 }
 
 namespace Hud {

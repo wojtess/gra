@@ -3,8 +3,9 @@
 #include <optional>
 
 namespace RayCastUtils {
-    
-    std::optional<Vector2> IntersectionLine(Vector2 rayOrigin, Vector2 rayDirection, Vector2 lineStart, Vector2 lineEnd);
+
+    std::optional<Vector2> intersectionLine(Vector2 rayOrigin, Vector2 rayDirection, Vector2 lineStart, Vector2 lineEnd);
+    std::optional<Vector2> intersectionCircle(Vector2 rayOrigin, Vector2 rayDirection, Vector2 center, float r);
 
 }
 

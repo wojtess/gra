@@ -52,11 +52,7 @@ namespace Screen {
             for(const auto& entity:game.getEntitys()) {
                 auto point = entity->getIntersectionPoint(a, b);
                 if(point) {
-                    rlPushMatrix();
-                        auto pos = entity->getPos();
-                        rlTranslatef(pos.x, pos.y, 0);
-                        DrawLineEx(a, *point, 1.0f, BLUE);
-                    rlPopMatrix();
+                    DrawLineEx(a, *point, 1.0f, BLUE);
                     goto lineFound;
                 }
             }

@@ -106,6 +106,14 @@ namespace Shapes {
         this->pos = pos;
     }
 
+    Vector2 Circle::getPos() const {
+        return pos;
+    }
+
+    float Circle::getRadius() const {
+        return radius;
+    }
+
     Shape::Shape(std::vector<Vector2> vertices) {
         Vector2 centroid = {0, 0};
         for (const auto& vertex : vertices) {
@@ -226,16 +234,18 @@ bool PhysicsObject::isColliding(const PhysicsObject& other) {
 }
 
 std::optional<Vector2> PhysicsObject::getIntersectionPoint(Vector2 origin, Vector2 end) {
+    float len = std::numeric_limits<float>::max();
+    Vector2 out;
+    bool found = false;
+
     for(const auto& shape:shapes) {
+        //check for Shapes::Shape
         Shapes::Shape* shape0 = dynamic_cast<Shapes::Shape*>(shape.get());
         if(shape0) {
             shape->setPos(pos);
             auto vertices = shape->getVertices();
-            float len = std::numeric_limits<float>::max();
-            Vector2 out;
-            bool found = false;
             {
-                if(auto out0 = RayCastUtils::IntersectionLine(origin, Vector2Normalize(Vector2Subtract(end, origin)), vertices[0], vertices[vertices.size() - 1])) {
+                if(auto out0 = RayCastUtils::intersectionLine(origin, Vector2Normalize(Vector2Subtract(end, origin)), vertices[0], vertices[vertices.size() - 1])) {
                     out = *out0;
                     len = Vector2LengthSqr(Vector2Subtract(origin, *out0));
                     //withgout check if(!found), beacuse it is faster to just move 1 to found than checking and then moving(1 instruction vs 3 instrcution at least)
@@ -243,7 +253,7 @@ std::optional<Vector2> PhysicsObject::getIntersectionPoint(Vector2 origin, Vecto
                 }
             }
             for(size_t i = 1; i < vertices.size(); i++) {
-                if(auto out0 = RayCastUtils::IntersectionLine(origin, Vector2Normalize(Vector2Subtract(end, origin)), vertices[i - 1], vertices[i])) {
+                if(auto out0 = RayCastUtils::intersectionLine(origin, Vector2Normalize(Vector2Subtract(end, origin)), vertices[i - 1], vertices[i])) {
                     auto len0 = Vector2LengthSqr(Vector2Subtract(origin, *out0));
                     if(len > len0) {
                         out = *out0;
@@ -253,10 +263,23 @@ std::optional<Vector2> PhysicsObject::getIntersectionPoint(Vector2 origin, Vecto
                 }
                 
             }
-            if(found)
-                return out;
+        } else {
+            //check for circle
+            Shapes::Circle* circle = dynamic_cast<Shapes::Circle*>(shape.get());
+            if(circle) {
+                if(auto out0 = RayCastUtils::intersectionCircle(origin, Vector2Normalize(Vector2Subtract(end, origin)), circle->getPos(), circle->getRadius())) {
+                    auto len0 = Vector2LengthSqr(Vector2Subtract(origin, *out0));
+                    if(len > len0) {
+                        out = *out0;
+                        len = len0;
+                        found = true;
+                    }
+                }
+            }
         }
     }
+    if(found)
+        return out;
     return {};
 }
 

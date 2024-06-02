@@ -2,7 +2,7 @@
 #include "raymath.h"
 
 namespace RayCastUtils {
-    std::optional<Vector2> IntersectionLine(Vector2 rayOrigin, Vector2 rayDirection, Vector2 lineStart, Vector2 lineEnd) {
+    std::optional<Vector2> intersectionLine(Vector2 rayOrigin, Vector2 rayDirection, Vector2 lineStart, Vector2 lineEnd) {
         // Calculate the direction of the line segment
         Vector2 lineDir = Vector2Subtract(lineEnd, lineStart);
 
@@ -21,6 +21,42 @@ namespace RayCastUtils {
         }
 
         return {};
+    }
+
+    std::optional<Vector2> intersectionCircle(Vector2 rayOrigin, Vector2 rayDirection, Vector2 center, float r) {
+        // Calculate the vector from the ray origin to the circle center
+        Vector2 oc = Vector2Subtract(center, rayOrigin);
+        
+        // Calculate projection of oc onto the ray direction
+        float t = Vector2DotProduct(oc, rayDirection);
+        
+        // Calculate the point on the ray closest to the circle center
+        Vector2 closestPoint = Vector2Add(rayOrigin, Vector2Scale(rayDirection, t));
+        
+        // Calculate the distance from the closest point to the circle center
+        float d = Vector2DistanceSqr(closestPoint, center);
+        float rsq = r * r;
+        
+        // Check if the closest point is within the circle
+        if (d > rsq) {
+            return {};
+        }
+        
+        // Calculate the distance from the closest point to the intersection points
+        float thc = sqrtf(rsq - d);
+        
+        // Calculate intersection points (only the closest one is needed)
+        float t0 = t - thc;
+        float t1 = t + thc;
+        
+        // Ensure the intersection point is in front of the ray origin
+        if (t0 >= 0) {
+            return Vector2Add(rayOrigin, Vector2Scale(rayDirection, t0));
+        } else if (t1 >= 0) {
+            return Vector2Add(rayOrigin, Vector2Scale(rayDirection, t1));
+        } else {
+            return {};
+        }
     }
 }
 

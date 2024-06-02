@@ -24,6 +24,8 @@ namespace Shapes {
         std::optional<Vector2> isColliding(const std::unique_ptr<AbstractShape>&);
         std::vector<Vector2> getVertices() override;
         void setPos(Vector2);
+        Vector2 getPos() const;
+        float getRadius() const;
     };
 
     class Shape: public AbstractShape {

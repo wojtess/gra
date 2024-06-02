@@ -202,46 +202,6 @@ void PhysicsObject::tick(std::vector<std::shared_ptr<PhysicsObject>> entitys) {
                 }
             }
         }
-
-        // //check if vel is 0, dont check collisions if there cant be any
-        // if(vel.x != 0) {
-        //     Vector2 checkingPos = {pos.x + vel.x * GetFrameTime(), pos.y};
-        //     shape->setPos(checkingPos);
-        //     for(auto& entity:entitys) {
-        //         if(entity.get() == this) {
-        //             //dont check collisions with itself
-        //             break;
-        //         }
-        //         for(auto& otherShape:entity->shapes) {
-        //             if(shape->isColliding(otherShape)) {
-        //                 vel.x = 0;
-        //                 //collision in X axis
-        //                 goto exitXLoop;
-        //             }
-        //         }
-        //     }
-        // }
-        // exitXLoop:
-        // //check if vel is 0, dont check collisions if there cant be any
-        // if(vel.y != 0) {
-        //     Vector2 checkingPos = {pos.x, pos.y + vel.y * GetFrameTime()};
-        //     shape->setPos(checkingPos);
-        //     for(auto& entity:entitys) {
-        //         if(entity.get() == this) {
-        //             //dont check collisions with itself
-        //             break;
-        //         }
-        //         for(auto& otherShape:entity->shapes) {
-        //             if(auto vec = shape->isColliding(otherShape)) {
-        //                 vel.y = 0;
-        //                 //collision in Y axis
-        //                 goto exitYLoop;
-        //             }
-        //         }
-        //     }
-        // }
-        // exitYLoop:
-        // continue;
     }
 
     pos.x += vel.x * GetFrameTime();
@@ -263,6 +223,41 @@ bool PhysicsObject::isColliding(const PhysicsObject& other) {
         }
     }
     return false;
+}
+
+std::optional<Vector2> PhysicsObject::getIntersectionPoint(Vector2 origin, Vector2 end) {
+    for(const auto& shape:shapes) {
+        Shapes::Shape* shape0 = dynamic_cast<Shapes::Shape*>(shape.get());
+        if(shape0) {
+            shape->setPos(pos);
+            auto vertices = shape->getVertices();
+            float len = std::numeric_limits<float>::max();
+            Vector2 out;
+            bool found = false;
+            {
+                if(auto out0 = RayCastUtils::IntersectionLine(origin, Vector2Normalize(Vector2Subtract(end, origin)), vertices[0], vertices[vertices.size() - 1])) {
+                    out = *out0;
+                    len = Vector2LengthSqr(Vector2Subtract(origin, *out0));
+                    //withgout check if(!found), beacuse it is faster to just move 1 to found than checking and then moving(1 instruction vs 3 instrcution at least)
+                    found = true;
+                }
+            }
+            for(size_t i = 1; i < vertices.size(); i++) {
+                if(auto out0 = RayCastUtils::IntersectionLine(origin, Vector2Normalize(Vector2Subtract(end, origin)), vertices[i - 1], vertices[i])) {
+                    auto len0 = Vector2LengthSqr(Vector2Subtract(origin, *out0));
+                    if(len > len0) {
+                        out = *out0;
+                        len = len0;
+                        found = true;
+                    }
+                }
+                
+            }
+            if(found)
+                return out;
+        }
+    }
+    return {};
 }
 
 bool PhysicsObject::isColliding(const PhysicsObject* other) {

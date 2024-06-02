@@ -44,14 +44,6 @@ void Game::run() {
             for(const auto& entity:entitys) {
                 entity->tick(entitys);
             }
-
-            {
-                for(const auto& entity:entitys) {
-                    if(player->isColliding(entity.get())) {
-
-                    }
-                }
-            }
         }
 
 

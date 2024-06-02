@@ -60,6 +60,8 @@ class PhysicsObject: public Renderer::Renderable2DObject {
     bool isColliding(const PhysicsObject& other);
     bool isColliding(const PhysicsObject* other);
 
+    std::optional<Vector2> getIntersectionPoint(Vector2 origin, Vector2 end);
+
     //dont pass any time, beacuse raylib have intergated function for that
     virtual void tick(std::vector<std::shared_ptr<PhysicsObject>> entitys);
 };

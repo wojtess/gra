@@ -2,6 +2,7 @@
 #include "object.h"
 #include "game.h"
 #include "rlgl.h"
+#include "raymath.h"
 
 namespace Screen {
     void HomeScreen::render(Game& game) {
@@ -42,6 +43,8 @@ namespace Screen {
         // button.render();
         camera.offset = Vector2{width / 2.0f, height / 2.0f};
         camera.target = game.getPlayer()->getPos();
+
+        DrawLineEx(Vector2{width / 2.0f, height / 2.0f}, Vector2Add(Vector2{width / 2.0f, height / 2.0f}, Vector2Subtract(GetMousePosition(), Vector2{width / 2.0f, height / 2.0f})), 1.f, GREEN);
 
         BeginMode2D(camera);
             for(const auto& entity:game.getEntitys()) {

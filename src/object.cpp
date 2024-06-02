@@ -11,13 +11,13 @@ namespace Shapes {
 
     }
 
-    bool Circle::isColliding(const std::unique_ptr<AbstractShape>& other) {
+    std::optional<Vector2> Circle::isColliding(const std::unique_ptr<AbstractShape>& other) {
         Circle* circle = dynamic_cast<Circle*>(other.get());
         if(circle) {
             if(Vector2Distance(pos, circle->pos) <= radius + circle->radius) {
-                return true;
+                return Vector2Subtract(pos, circle->pos);
             }
-            return false;
+            return {};
         } else {
             Shape* shape = dynamic_cast<Shape*>(other.get());
             if (shape) {
@@ -58,6 +58,9 @@ namespace Shapes {
                 }
                 axes.push_back(direction);
 
+                float minOverlap = std::numeric_limits<float>::infinity();
+                Vector2 collisionEdge;
+
                 //last step is to project all vertices to axes and see if they overlap
                 for (const auto& axis : axes) {
                     float minA = std::numeric_limits<float>::infinity();
@@ -76,13 +79,21 @@ namespace Shapes {
 
                     //check if they overlap
                     if (maxA < minB || maxB < minA) {
-                        return false;
+                        //dont overlap, no collision
+                        return {};
+                    } else {
+                        //overlap, save distace and axis, lower distance is edge that we are colliding with
+                        float overlap = std::min(maxA, maxB) - std::max(minA, minB);
+                        if (overlap < minOverlap) {
+                            minOverlap = overlap;
+                            collisionEdge = axis;
+                        }
                     }
                 }
-                return true;
+                return collisionEdge;
             }
             //should not happend
-            return false;
+            return {};
         }
     }
 
@@ -111,9 +122,9 @@ namespace Shapes {
         this->vertices = vertices;
     }
 
-    bool Shape::isColliding(const std::unique_ptr<AbstractShape>& other) {
+    std::optional<Vector2> Shape::isColliding(const std::unique_ptr<AbstractShape>& other) {
         //for now unused, all collisions is checked from player "perpsecive"
-        return false;
+        return {};
     }
 
     std::vector<Vector2> Shape::getVertices() {
@@ -166,11 +177,72 @@ void PhysicsObject::applyFrixion() {
     vel.y *= exp(-dumpingFactor * GetFrameTime());
 }
 
-void PhysicsObject::tick() {
+void PhysicsObject::tick(std::vector<std::shared_ptr<PhysicsObject>> entitys) {
     vel.x += accel.x * GetFrameTime();
     vel.y += accel.y * GetFrameTime();
 
     applyFrixion();
+
+    for(auto& shape:shapes) {
+        Vector2 checkingPos = {pos.x + vel.x * GetFrameTime(), pos.y + vel.y * GetFrameTime()};
+        shape->setPos(checkingPos);
+        for(auto& entity:entitys) {
+            if(entity.get() == this) {
+                //dont check collisions with itself
+                break;
+            }
+            for(auto& otherShape:entity->shapes) {
+                if(auto vec = shape->isColliding(otherShape)) {
+                    Vector2 normal = Vector2Normalize(*vec);
+                    float dot = Vector2DotProduct(vel, normal);
+                    if(dot < 0) {
+                        Vector2 projection = {dot * normal.x, dot * normal.y};
+                        vel = Vector2Subtract(vel, projection);
+                    }
+                }
+            }
+        }
+
+        // //check if vel is 0, dont check collisions if there cant be any
+        // if(vel.x != 0) {
+        //     Vector2 checkingPos = {pos.x + vel.x * GetFrameTime(), pos.y};
+        //     shape->setPos(checkingPos);
+        //     for(auto& entity:entitys) {
+        //         if(entity.get() == this) {
+        //             //dont check collisions with itself
+        //             break;
+        //         }
+        //         for(auto& otherShape:entity->shapes) {
+        //             if(shape->isColliding(otherShape)) {
+        //                 vel.x = 0;
+        //                 //collision in X axis
+        //                 goto exitXLoop;
+        //             }
+        //         }
+        //     }
+        // }
+        // exitXLoop:
+        // //check if vel is 0, dont check collisions if there cant be any
+        // if(vel.y != 0) {
+        //     Vector2 checkingPos = {pos.x, pos.y + vel.y * GetFrameTime()};
+        //     shape->setPos(checkingPos);
+        //     for(auto& entity:entitys) {
+        //         if(entity.get() == this) {
+        //             //dont check collisions with itself
+        //             break;
+        //         }
+        //         for(auto& otherShape:entity->shapes) {
+        //             if(auto vec = shape->isColliding(otherShape)) {
+        //                 vel.y = 0;
+        //                 //collision in Y axis
+        //                 goto exitYLoop;
+        //             }
+        //         }
+        //     }
+        // }
+        // exitYLoop:
+        // continue;
+    }
 
     pos.x += vel.x * GetFrameTime();
     pos.y += vel.y * GetFrameTime();

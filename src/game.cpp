@@ -4,6 +4,7 @@
 #include "rlImGui.h"
 #include "imgui.h"
 #include "item.h"
+#include "raymath.h"
 #include <optional>
 
 void Game::run() {
@@ -11,11 +12,12 @@ void Game::run() {
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     rlImGuiSetup(true);
 
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{100.0f, 100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{100.0f, 100.0f})));
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{20.0f, 20.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, RED)));
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::GunItem>(), Vector2{-100.0f, -100.0f})));
 
     while(true) {
+        //if player is null that means that world dont exist and we are on diffrent screen
         if(this->player) {
             //tick world and shit
             {
@@ -43,9 +45,24 @@ void Game::run() {
                 this->player->setAccel(accel1);
                 this->player->tick(entitys);
             }
+            
 
-            for(const auto& entity:entitys) {
+            //tick entity and remove ones that are picked from the ground(items only);
+            for(auto it = entitys.begin(); it != entitys.end();) {
+                auto entity = *it;
                 entity->tick(entitys);
+                {
+                    auto item = std::dynamic_pointer_cast<Entity::DropedItem>(entity);
+                    if(item) {
+                        auto dist = Vector2Distance(this->player->getPos(), item->getPos());
+                        if(dist <= item->getItem()->getPickupDistance() && player->getItems().size() <= STACK_SIZE) {
+                            player->getItems().push_back(item->getItem());
+                            it = entitys.erase(it);
+                            continue;
+                        }
+                    }
+                } 
+                it++;
             }
         }
 
@@ -73,6 +90,7 @@ void Game::run() {
                 ImGui::Text("player vel: x:%f, y:%f", player->getVel().x, player->getVel().y);
                 ImGui::Text("player accel: x:%f, y:%f", player->getAccel().x, player->getAccel().y);
                 ImGui::Text("player colliding: %d", colliding);
+                ImGui::Text("player items: %d", player->getItems().size());
             }
             ImGui::End();
         }
@@ -101,6 +119,10 @@ std::vector<std::shared_ptr<PhysicsObject>> Game::getEntitys() const {
     return entitys;
 }
 
-std::shared_ptr<Entity::Player> Game::getPlayer() const {
+std::shared_ptr<Entity::Player> Game::getPlayer() {
     return player;
+}
+
+void Game::setPlayer(std::shared_ptr<Entity::Player> player) {
+    this->player = player;
 }

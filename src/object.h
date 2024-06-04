@@ -76,20 +76,26 @@ namespace Entity {
         Zombie(Vector2 pos);
         void render() override;
     };
+
     class Player: public PhysicsObject {
         private:
-        std::unique_ptr<Items::AbstractItem> items[6];
+        std::vector<std::shared_ptr<Items::AbstractItem>> items;
+        int selectedItem;
         public:
         Player(Vector2 pos);
         void render() override;
+        std::vector<std::shared_ptr<Items::AbstractItem>>& getItems();
+        int getSelctedItemIndex();
+        std::optional<std::shared_ptr<Items::AbstractItem>> getSelectedItem();
     };
 
     class DropedItem: public PhysicsObject {
         private:
-        std::unique_ptr<Items::AbstractItem> item;
+        std::shared_ptr<Items::AbstractItem> item;
         public:
-        DropedItem(std::unique_ptr<Items::AbstractItem>, Vector2);
+        DropedItem(std::shared_ptr<Items::AbstractItem>, Vector2);
         void render() override;
+        std::shared_ptr<Items::AbstractItem>& getItem();
     };
 }
 

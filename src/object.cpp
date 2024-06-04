@@ -4,6 +4,7 @@
 #include "raymath.h"
 #include <algorithm>
 #include <limits>
+#include "game.h"
 
 namespace Shapes {
     
@@ -310,7 +311,7 @@ namespace Entity {
         DrawCircle(0, 0, 10, RED);
     }
 
-    Player::Player(Vector2 pos): PhysicsObject(8.f) {
+    Player::Player(Vector2 pos): PhysicsObject(8.f), selectedItem(0) {
         this->pos = pos;
         shapes.push_back(std::make_unique<Shapes::Circle>(10.0f));
     }
@@ -319,7 +320,22 @@ namespace Entity {
         DrawCircle(0, 0, 10, BLUE);
     }
 
-    DropedItem::DropedItem(std::unique_ptr<Items::AbstractItem> item, Vector2 pos): item(std::move(item)) {
+    int Player::getSelctedItemIndex() {
+        return selectedItem;
+    }
+
+    std::optional<std::shared_ptr<Items::AbstractItem>> Player::getSelectedItem() {
+        if(selectedItem < 0 || selectedItem >= items.size()) {
+            return {};
+        }
+        return items[selectedItem];
+    }
+
+    std::vector<std::shared_ptr<Items::AbstractItem>>& Player::getItems() {
+        return items;
+    }
+
+    DropedItem::DropedItem(std::shared_ptr<Items::AbstractItem> item, Vector2 pos): item(std::move(item)) {
         this->pos = pos;
         shapes.push_back(std::make_unique<Shapes::Circle>(20.0f));
         physicsOn = false;
@@ -327,6 +343,10 @@ namespace Entity {
 
     void DropedItem::render() {
         item->render();
+    }
+
+    std::shared_ptr<Items::AbstractItem>& DropedItem::getItem() {
+        return item;
     }
 }
 

@@ -4,6 +4,8 @@
 #include "object.h"
 #include <memory>
 
+const int STACK_SIZE = 6; 
+
 class Game {
     private:
     std::unique_ptr<Screen::AbstractScreen> screen;
@@ -15,5 +17,6 @@ class Game {
     void run();
     void newGame();
     std::vector<std::shared_ptr<PhysicsObject>> getEntitys() const;
-    std::shared_ptr<Entity::Player> getPlayer() const;
+    std::shared_ptr<Entity::Player> getPlayer();
+    void setPlayer(std::shared_ptr<Entity::Player>);
 };

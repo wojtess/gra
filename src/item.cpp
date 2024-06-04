@@ -2,6 +2,15 @@
 #include "object.h"
 
 namespace Items {
+
+    AbstractItem::AbstractItem(float pickupDistance): pickupDistance(pickupDistance) {}
+
+    float AbstractItem::getPickupDistance() const {
+        return pickupDistance;
+    }
+
+    GunItem::GunItem(): AbstractItem(22.f) {}
+
     void GunItem::shoot(std::unique_ptr<Entity::Zombie>& other) {
 
     }

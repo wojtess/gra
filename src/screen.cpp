@@ -87,8 +87,16 @@ namespace Screen {
         camera.offset = Vector2{width / 2.0f, height / 2.0f};
         camera.target = player->getPos();
 
+        {
+            //caluclate where player is looking
+            //it is calculated in screen, beacuse we need to know where player is rendered,
+            //when some weirder renderer options is used(like multiple cameras from diffrent perspectives) this could matter more.
+            auto mousePos = Vector2Add(player->getPos(), Vector2Scale(Vector2Subtract(savedMousePos, camera.offset), 1.0f/camera.zoom));
+            auto directionWherePlayerIsLooking = Vector2Normalize(Vector2Subtract(mousePos, player->getPos()));
+            player->setLookingDirection(directionWherePlayerIsLooking);
+        }
 
-        auto mousePos = Vector2Add(player->getPos(), Vector2Scale(Vector2Subtract(savedMousePos, camera.offset), 1.0f/camera.zoom));
+
         struct rayCastData_t {
             std::shared_ptr<PhysicsObject> object;
             Vector2 pos;
@@ -99,7 +107,8 @@ namespace Screen {
 
             float len = std::numeric_limits<float>::max();
             for(auto entity:game.getEntitys()) {
-                auto point = entity->getIntersectionPoint(origin, mousePos);
+                //multply locking direction by 100.0f to be sure that our ray is idk words for this
+                auto point = entity->getIntersectionPoint(origin, Vector2Add(Vector2Scale(player->getLookingDirection(), 100.0f), origin));
                 if(point) {
                     auto len0 = Vector2DistanceSqr(origin, entity->getPos());
                     if(len > len0) {
@@ -115,7 +124,7 @@ namespace Screen {
             if(objectOnCoursor) {
                 DrawLineEx(player->getPos(), (*objectOnCoursor).pos, 1.0f, RED);
             } else {
-                DrawLineEx(player->getPos(), Vector2Add(Vector2Scale(Vector2Normalize(Vector2Subtract(mousePos, player->getPos())), 1000.0f), player->getPos()), 1.0f, GREEN);
+                DrawLineEx(player->getPos(), Vector2Add(Vector2Scale(player->getLookingDirection(), 1000.0f), player->getPos()), 1.0f, GREEN);
             }
 
             for(const auto& entity:game.getEntitys()) {
@@ -146,10 +155,12 @@ namespace Screen {
             
             for (int i = 0; i < player->getItems().size(); i++) {
                 auto item = player->getItems()[i];
-                rlPushMatrix();
-                    rlTranslatef(((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + size.x / 2, height - size.y - y_offset + size.y / 2, 0.0f);
-                    item->render();
-                rlPopMatrix();
+                if(item) {
+                    rlPushMatrix();
+                        rlTranslatef(((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + size.x / 2, height - size.y - y_offset + size.y / 2, 0.0f);
+                        item->render();
+                    rlPopMatrix();
+                }
             }
         }
 

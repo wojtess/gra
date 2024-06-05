@@ -45,7 +45,27 @@ void Game::run() {
                 this->player->setAccel(accel1);
                 this->player->tick(entitys);
             }
-            
+            {
+                if(IsKeyDown(KEY_Q)) {
+                    int selectedItem = this->player->getSelctedItemIndex();
+                    auto& items = this->player->getItems();
+                    if(items[selectedItem] != nullptr) {
+                        auto item = items[selectedItem];
+                        items[selectedItem] = nullptr;
+
+                        auto lookingDir = this->player->getLookingDirection();
+                        auto playerPos = this->player->getPos();
+                        auto droppedItem = std::make_shared<Entity::DropedItem>(item, Vector2{playerPos.x + lookingDir.x * (item->getPickupDistance() + 1.0f), playerPos.y + lookingDir.y * (item->getPickupDistance() + 1.0f)});
+                        droppedItem->setVel(Vector2Scale(lookingDir, 5000.0f));
+                        entitys.push_back(std::static_pointer_cast<PhysicsObject>(droppedItem));
+                    }
+                }
+
+                if(IsKeyDown(KEY_R)) {
+                    auto& items = this->player->getItems();
+                    items[0] = std::make_unique<Items::GunItem>();
+                }
+            }
 
             //tick entity and remove ones that are picked from the ground(items only);
             for(auto it = entitys.begin(); it != entitys.end();) {
@@ -55,17 +75,30 @@ void Game::run() {
                     auto item = std::dynamic_pointer_cast<Entity::DropedItem>(entity);
                     if(item) {
                         auto dist = Vector2Distance(this->player->getPos(), item->getPos());
-                        if(dist <= item->getItem()->getPickupDistance() && player->getItems().size() <= STACK_SIZE) {
-                            player->getItems().push_back(item->getItem());
-                            it = entitys.erase(it);
+                        if(dist <= item->getItem()->getPickupDistance()) {
+                            auto& items = player->getItems();
+                            for(int i = 0;i < items.size();i++) {
+                                if(items[i] == nullptr) {
+                                    items[i] = item->getItem();
+                                    it = entitys.erase(it);
+                                    //when we find item, exit loop and tell next loop that we need to continue,
+                                    //we need to continue in outer loop(one that iterates over entitys)
+                                    //beacuse we dont want to execute last instruction in this loop(it++;)
+                                    goto removed;
+                                }
+                            }
+                            //if we are here then skip `continue;`,
+                            //`inc` label could be after `continue;`, but C dont allow this for some reason
+                            goto inc;
+                            removed:
                             continue;
                         }
                     }
-                } 
+                }
+                inc:
                 it++;
             }
         }
-
 
         //begin drawning raylib
         BeginDrawing();

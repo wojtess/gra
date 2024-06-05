@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include "constants.h"
 
 namespace Shapes {
 
@@ -79,14 +80,20 @@ namespace Entity {
 
     class Player: public PhysicsObject {
         private:
-        std::vector<std::shared_ptr<Items::AbstractItem>> items;
+        //lookingDirection is normalized value, only direction is import so this could be saved as one float value, but for easier implementation it is stored as vector2
+        Vector2 lookingDirection;
+        std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE> items;
         int selectedItem;
         public:
         Player(Vector2 pos);
         void render() override;
-        std::vector<std::shared_ptr<Items::AbstractItem>>& getItems();
+
+        std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE>& getItems();
         int getSelctedItemIndex();
         std::optional<std::shared_ptr<Items::AbstractItem>> getSelectedItem();
+
+        void setLookingDirection(Vector2);
+        Vector2 getLookingDirection() const;
     };
 
     class DropedItem: public PhysicsObject {

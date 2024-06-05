@@ -3,8 +3,7 @@
 #include "renderer.h"
 #include "object.h"
 #include <memory>
-
-const int STACK_SIZE = 6; 
+#include "constants.h"
 
 class Game {
     private:

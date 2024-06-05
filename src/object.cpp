@@ -330,9 +330,17 @@ namespace Entity {
         }
         return items[selectedItem];
     }
-
-    std::vector<std::shared_ptr<Items::AbstractItem>>& Player::getItems() {
+    
+    std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE>& Player::getItems() {
         return items;
+    }
+
+    void Player::setLookingDirection(Vector2 v) {
+        lookingDirection = v;
+    }
+
+    Vector2 Player::getLookingDirection() const {
+        return lookingDirection;
     }
 
     DropedItem::DropedItem(std::shared_ptr<Items::AbstractItem> item, Vector2 pos): item(std::move(item)) {

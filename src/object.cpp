@@ -6,6 +6,14 @@
 #include <limits>
 #include "game.h"
 
+void Entity::Zombie::setHp(int nowe) {
+    hp = nowe;
+}
+
+int Entity::Zombie::getHp() {
+    return hp;
+}
+
 namespace Shapes {
     
     Circle::Circle(float radius): radius(radius) {

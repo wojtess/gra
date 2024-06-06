@@ -9,14 +9,27 @@ namespace Items {
         return pickupDistance;
     }
 
-    GunItem::GunItem(): AbstractItem(10.f) {}
+    int AbstractItem::getUses() {
+        return uses;
+    }
 
-    void GunItem::shoot(std::unique_ptr<Entity::Zombie>& other) {
+    GunItem::GunItem(): AbstractItem(10.f) {
+        uses = 10;
+    }
 
+    bool GunItem::shoot(std::shared_ptr<Entity::Zombie>& other) {
+        if (uses <= 0) {
+            return false;
+        };
+        if (other) {
+            other->setHp(other->getHp() - 1.0f);
+        };
+        uses--;
+        return true;
     }
 
     void GunItem::use(std::shared_ptr<Entity::Player> player) {
-
+        uses = 10;
     }
 
     void GunItem::render() {

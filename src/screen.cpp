@@ -160,6 +160,7 @@ namespace Screen {
                         rlTranslatef(((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + size.x / 2, height - size.y - y_offset + size.y / 2, 0.0f);
                         item->render();
                     rlPopMatrix();
+                    DrawText(TextFormat("%d", item->getUses()), ((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + 10, height - size.y - y_offset + size.y - 25, 20, RED);
                 }
             }
         }

@@ -13,6 +13,7 @@ void Game::run() {
     rlImGuiSetup(true);
 
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-200.0f, -100.0f})));
+
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{20.0f, 20.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, RED)));
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::GunItem>(), Vector2{-100.0f, -100.0f})));
 
@@ -118,7 +119,45 @@ void Game::run() {
                 inc:
                 it++;
             }
+
+        if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        struct rayCastData_t {
+            std::shared_ptr<PhysicsObject> object;
+            Vector2 pos;
+        };
+        std::optional<rayCastData_t> objectOnCoursor;
+        {
+            auto origin = player->getPos();
+
+            float len = std::numeric_limits<float>::max();
+            for(auto entity:getEntitys()) {
+                //multply locking direction by 100.0f to be sure that our ray is idk words for this
+                auto point = entity->getIntersectionPoint(origin, Vector2Add(Vector2Scale(player->getLookingDirection(), 100.0f), origin));
+                if(point) {
+                    auto len0 = Vector2DistanceSqr(origin, entity->getPos());
+                    if(len > len0) {
+                        objectOnCoursor = rayCastData_t{entity, *point};
+                        len = len0;
+                    }
+                }
+            }
         }
+
+        if (objectOnCoursor) {
+            auto zombieObject = std::dynamic_pointer_cast<Entity::Zombie>(objectOnCoursor->object);
+            if (zombieObject) {
+                auto item = player->getSelectedItem();
+                if (item) {
+                    auto gun = std::dynamic_pointer_cast<Items::GunItem>(*item);
+                    if(gun) {
+                        gun->shoot(zombieObject);
+                    }
+                };
+            };
+        };
+        }
+        }
+        
 
         //begin drawning raylib
         BeginDrawing();

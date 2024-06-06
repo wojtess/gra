@@ -82,6 +82,10 @@ namespace Entity {
         void render() override;
         //tick is overrided, beacuse zombie need to have "ai" that will follow player
         void tick(Game&) override;
+        void setHp(int nowe);
+        int getHp();
+        private:
+        int hp;
     };
 
     class Player: public PhysicsObject {
@@ -90,7 +94,7 @@ namespace Entity {
         Vector2 lookingDirection;
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE> items;
         int selectedItem;
-        
+
         public:
         Player(Vector2 pos);
         void render() override;

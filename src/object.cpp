@@ -12,15 +12,15 @@ namespace Shapes {
 
     }
 
-    std::optional<Vector2> Circle::isColliding(const std::unique_ptr<AbstractShape>& other) {
-        Circle* circle = dynamic_cast<Circle*>(other.get());
+    std::optional<Vector2> Circle::isColliding(const std::shared_ptr<AbstractShape>& other) {
+        auto circle = std::dynamic_pointer_cast<Circle>(other);
         if(circle) {
             if(Vector2Distance(pos, circle->pos) <= radius + circle->radius) {
                 return Vector2Subtract(pos, circle->pos);
             }
             return {};
         } else {
-            Shape* shape = dynamic_cast<Shape*>(other.get());
+            auto shape = std::dynamic_pointer_cast<Shape>(other);
             if (shape) {
                 //separating axis theorem tells us that we need to draw a line beetwen two objects to tell if there are overlaping or not
                 //to know where to find these lines we create perperdicular vector to each edge and project shape to these vectors
@@ -131,7 +131,7 @@ namespace Shapes {
         this->vertices = vertices;
     }
 
-    std::optional<Vector2> Shape::isColliding(const std::unique_ptr<AbstractShape>& other) {
+    std::optional<Vector2> Shape::isColliding(const std::shared_ptr<AbstractShape>& other) {
         //for now unused, all collisions is checked from player "perpsecive"
         return {};
     }
@@ -186,7 +186,7 @@ void PhysicsObject::applyFrixion() {
     vel.y *= exp(-dumpingFactor * GetFrameTime());
 }
 
-void PhysicsObject::tick(std::vector<std::shared_ptr<PhysicsObject>> entitys) {
+void PhysicsObject::tick(Game& game) {
     vel.x += accel.x * GetFrameTime();
     vel.y += accel.y * GetFrameTime();
 
@@ -195,7 +195,7 @@ void PhysicsObject::tick(std::vector<std::shared_ptr<PhysicsObject>> entitys) {
     for(auto& shape:shapes) {
         Vector2 checkingPos = {pos.x + vel.x * GetFrameTime(), pos.y + vel.y * GetFrameTime()};
         shape->setPos(checkingPos);
-        for(auto& entity:entitys) {
+        for(auto& entity:game.getEntitys()) {
             if(entity.get() == this) {
                 //dont check collisions with itself
                 continue;
@@ -316,16 +316,50 @@ bool PhysicsObject::isColliding(const std::shared_ptr<PhysicsObject> other) {
 namespace Entity {
     Zombie::Zombie(Vector2 pos) {
         this->pos = pos;
-        shapes.push_back(std::make_unique<Shapes::Circle>(10.0f));
+        shapes.push_back(std::make_shared<Shapes::Circle>(10.0f));
+        for(auto& shape:shapes) {
+            shape->setPos(pos);
+        }
     }
 
     void Zombie::render() {
         DrawCircle(0, 0, 10, RED);
     }
 
+    void Zombie::tick(Game& game) {
+        auto player = game.getPlayer();
+        auto playerPos = player->getPos();
+        if(Vector2Distance(playerPos, getPos()) < 500.0f) {
+            //directtion where is player
+            auto dir = Vector2Normalize(Vector2Subtract(playerPos, getPos()));
+            //zombie are stupid so they just go where they see player
+            for(auto e:game.getEntitys()) {
+                //check if object(e varible) is this zombie
+                if((void*)e.get() != (void*)this) {
+                    //check if zombie(this) is looking at object
+                    if(auto interscetion = e->getIntersectionPoint(getPos(), Vector2Add(getPos(), Vector2Scale(dir, 100.0f)))) {
+                        //if zombie is looking at e check if object is befoer player
+                        //this means that player is hidden behind object
+                        if(Vector2DistanceSqr(getPos(), *interscetion) < Vector2DistanceSqr(getPos(), playerPos)) {
+                            goto setAccelToZero;
+                        }
+                    }
+                }
+            }
+            setAccel(Vector2Scale(dir, 800.0f));
+        } else {
+            setAccelToZero:
+            setAccel(Vector2{0.0f, 0.0f});
+        }
+        PhysicsObject::tick(game);
+    }
+
     Player::Player(Vector2 pos): PhysicsObject(8.f), selectedItem(0) {
         this->pos = pos;
-        shapes.push_back(std::make_unique<Shapes::Circle>(10.0f));
+        shapes.push_back(std::make_shared<Shapes::Circle>(10.0f));
+        for(auto& shape:shapes) {
+            shape->setPos(pos);
+        }
     }
 
     void Player::render() {
@@ -357,8 +391,11 @@ namespace Entity {
 
     DropedItem::DropedItem(std::shared_ptr<Items::AbstractItem> item, Vector2 pos): item(item) {
         this->pos = pos;
-        shapes.push_back(std::make_unique<Shapes::Circle>(item->getPickupDistance()));
+        shapes.push_back(std::make_shared<Shapes::Circle>(item->getPickupDistance()));
         physicsOn = false;
+        for(auto& shape:shapes) {
+            shape->setPos(pos);
+        }
     }
 
     void DropedItem::render() {
@@ -386,11 +423,11 @@ namespace Entity {
 }
 
 Building::Building(std::vector<Vector2> vertices, Color color): color(color) {
-    shapes.push_back(std::make_unique<Shapes::Shape>(vertices));
+    shapes.push_back(std::make_shared<Shapes::Shape>(vertices));
 }
 
 Building::Building(std::vector<Vector2> vertices, Color color, Vector2 pos): color(color) {
-    auto shape = std::make_unique<Shapes::Shape>(vertices);
+    auto shape = std::make_shared<Shapes::Shape>(vertices);
     shape->setPos(pos);
     shapes.push_back(std::move(shape));
 }

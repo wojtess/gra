@@ -12,7 +12,7 @@ void Game::run() {
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     rlImGuiSetup(true);
 
-    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{100.0f, 100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-200.0f, -100.0f})));
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{20.0f, 20.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, RED)));
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::GunItem>(), Vector2{-100.0f, -100.0f})));
 
@@ -43,7 +43,7 @@ void Game::run() {
                     accel1.y = (accel.y / len) * accelMultplayer;
                 }
                 this->player->setAccel(accel1);
-                this->player->tick(entitys);
+                this->player->tick(*this);
             }
             {
                 if(IsKeyDown(KEY_Q)) {
@@ -52,7 +52,6 @@ void Game::run() {
 
                     if(items[selectedItem] != nullptr) {
                         auto item = items[selectedItem];
-                        items[selectedItem] = nullptr;
 
                         auto lookingDir = this->player->getLookingDirection();
                         auto playerPos = this->player->getPos();
@@ -61,9 +60,20 @@ void Game::run() {
                         //where playerSize is radius in case if player is circle or something else like rectangle size in that direction
                         auto droppedItem = std::make_shared<Entity::DropedItem>(item, Vector2{playerPos.x + lookingDir.x * (item->getPickupDistance() * 2.5f), playerPos.y + lookingDir.y * (item->getPickupDistance() * 2.5f)});
                         droppedItem->setVel(Vector2Scale(lookingDir, 1000.0f));
+                        //check if droppedItem collide with anythink, if it collide it means that it cant be dropped.
+                        for(auto e:entitys) {
+                            if(droppedItem->isColliding(e)) {
+                                //dont add droppedItem to entitys
+                                //or remove item from invenotry
+                                goto skipDropping;
+                            }
+                        }
+
+                        items[selectedItem] = nullptr;
                         entitys.push_back(std::static_pointer_cast<PhysicsObject>(droppedItem));
                     }
                 }
+                skipDropping:
 
                 if(IsKeyDown(KEY_R)) {
                     auto& items = this->player->getItems();
@@ -80,7 +90,7 @@ void Game::run() {
             //tick entity and remove ones that are picked from the ground(items only);
             for(auto it = entitys.begin(); it != entitys.end();) {
                 auto entity = *it;
-                entity->tick(entitys);
+                entity->tick(*this);
                 {
                     auto item = std::dynamic_pointer_cast<Entity::DropedItem>(entity);
                     if(item) {

@@ -7,11 +7,14 @@
 #include <optional>
 #include "constants.h"
 
+//forward declaration
+class Game;
+
 namespace Shapes {
 
     class AbstractShape {
         public:
-        virtual std::optional<Vector2> isColliding(const std::unique_ptr<AbstractShape>&) = 0;
+        virtual std::optional<Vector2> isColliding(const std::shared_ptr<AbstractShape>&) = 0;
         virtual std::vector<Vector2> getVertices() = 0;
         virtual void setPos(Vector2) = 0;
         virtual ~AbstractShape() = default;
@@ -23,7 +26,7 @@ namespace Shapes {
         float radius;
         public:
         Circle(float radius);
-        std::optional<Vector2> isColliding(const std::unique_ptr<AbstractShape>&);
+        std::optional<Vector2> isColliding(const std::shared_ptr<AbstractShape>&);
         std::vector<Vector2> getVertices() override;
         void setPos(Vector2);
         Vector2 getPos() const;
@@ -36,7 +39,7 @@ namespace Shapes {
         Vector2 offset;
         public:
         Shape(std::vector<Vector2> vertices);
-        std::optional<Vector2> isColliding(const std::unique_ptr<AbstractShape>&);
+        std::optional<Vector2> isColliding(const std::shared_ptr<AbstractShape>&);
         std::vector<Vector2> getVertices() override;
         void setPos(Vector2);
     };
@@ -47,7 +50,7 @@ class PhysicsObject: public Renderer::Renderable2DObject {
     protected:
     Vector2 vel;
     Vector2 accel;
-    std::vector<std::unique_ptr<Shapes::AbstractShape>> shapes;
+    std::vector<std::shared_ptr<Shapes::AbstractShape>> shapes;
     bool physicsOn;
 
     float dumpingFactor;
@@ -69,7 +72,7 @@ class PhysicsObject: public Renderer::Renderable2DObject {
     std::optional<Vector2> getIntersectionPoint(Vector2 origin, Vector2 end);
 
     //dont pass any time, beacuse raylib have intergated function for that
-    virtual void tick(std::vector<std::shared_ptr<PhysicsObject>> entitys);
+    virtual void tick(Game&);
 };
 
 namespace Entity {
@@ -77,6 +80,8 @@ namespace Entity {
         public:
         Zombie(Vector2 pos);
         void render() override;
+        //tick is overrided, beacuse zombie need to have "ai" that will follow player
+        void tick(Game&) override;
     };
 
     class Player: public PhysicsObject {
@@ -85,6 +90,7 @@ namespace Entity {
         Vector2 lookingDirection;
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE> items;
         int selectedItem;
+        
         public:
         Player(Vector2 pos);
         void render() override;
@@ -145,5 +151,4 @@ namespace Hud {
             Label(std::string label, Vector2 pos, Color color, int fontSize = 10);
             void render() override;
     };
-
 }

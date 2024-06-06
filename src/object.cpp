@@ -396,7 +396,7 @@ namespace Entity {
     }
 
     std::optional<std::shared_ptr<Items::AbstractItem>> Player::getSelectedItem() {
-        if(selectedItem < 0 || selectedItem >= items.size()) {
+        if(selectedItem < 0 || selectedItem >= items.size() || items[selectedItem] == nullptr) {
             return {};
         }
         return items[selectedItem];

@@ -355,6 +355,11 @@ namespace Entity {
         
         auto player = game.getPlayer();
         auto playerPos = player->getPos();
+
+        if(Vector2Distance(playerPos, getPos()) < 15.0f) {
+            player->setHp(player->getHp() - 5.f * GetFrameTime());
+        }
+
         if(Vector2Distance(playerPos, getPos()) < 500.0f) {
             //directtion where is player
             auto dir = Vector2Normalize(Vector2Subtract(playerPos, getPos()));
@@ -387,7 +392,7 @@ namespace Entity {
             shape->setPos(pos);
         }
 
-        hp = 100;
+        hp = 100.0f;
     }
 
     void Player::render() {
@@ -398,11 +403,11 @@ namespace Entity {
         return selectedItem;
     }
 
-    void Player::setHp(int nowe) {
+    void Player::setHp(float nowe) {
         hp = nowe;
     }
 
-    int Player::getHp() {
+    float Player::getHp() {
         return hp;
     }
 

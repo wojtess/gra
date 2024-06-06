@@ -163,6 +163,8 @@ namespace Screen {
                     DrawText(TextFormat("%d", item->getUses()), ((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + 10, height - size.y - y_offset + size.y - 25, 20, RED);
                 }
             }
+
+            DrawText(TextFormat("hp: %f", player->getHp()), 100.0f, height - 100.0f, 30.0f, BLUE);
         }
 
         if(paused) {

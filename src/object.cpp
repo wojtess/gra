@@ -301,6 +301,18 @@ bool PhysicsObject::isColliding(const PhysicsObject* other) {
     return false;
 }
 
+bool PhysicsObject::isColliding(const std::shared_ptr<PhysicsObject> other) {
+    //same as PhysicsObject::isColliding(const PhysicsObject&), but for pointer
+    for(const auto& shape : shapes) {
+        for(auto& otherShape:other->shapes) {
+            if(shape->isColliding(otherShape)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 namespace Entity {
     Zombie::Zombie(Vector2 pos) {
         this->pos = pos;
@@ -343,9 +355,9 @@ namespace Entity {
         return lookingDirection;
     }
 
-    DropedItem::DropedItem(std::shared_ptr<Items::AbstractItem> item, Vector2 pos): item(std::move(item)) {
+    DropedItem::DropedItem(std::shared_ptr<Items::AbstractItem> item, Vector2 pos): item(item) {
         this->pos = pos;
-        shapes.push_back(std::make_unique<Shapes::Circle>(20.0f));
+        shapes.push_back(std::make_unique<Shapes::Circle>(item->getPickupDistance()));
         physicsOn = false;
     }
 
@@ -355,6 +367,21 @@ namespace Entity {
 
     std::shared_ptr<Items::AbstractItem>& DropedItem::getItem() {
         return item;
+    }
+
+    void Player::incraseSelectedItemIndex() {
+        selectedItem++;
+        if(selectedItem >= items.size()) {
+            selectedItem = 0;
+        }
+    }
+
+    void Player::decraseSelectedItemIndex() {
+        selectedItem--;
+        if(selectedItem < 0) {
+            //wont work if items.size() is equal to zero
+            selectedItem = items.size() - 1;
+        }
     }
 }
 

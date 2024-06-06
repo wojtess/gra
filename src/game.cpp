@@ -49,14 +49,18 @@ void Game::run() {
                 if(IsKeyDown(KEY_Q)) {
                     int selectedItem = this->player->getSelctedItemIndex();
                     auto& items = this->player->getItems();
+
                     if(items[selectedItem] != nullptr) {
                         auto item = items[selectedItem];
                         items[selectedItem] = nullptr;
 
                         auto lookingDir = this->player->getLookingDirection();
                         auto playerPos = this->player->getPos();
-                        auto droppedItem = std::make_shared<Entity::DropedItem>(item, Vector2{playerPos.x + lookingDir.x * (item->getPickupDistance() + 1.0f), playerPos.y + lookingDir.y * (item->getPickupDistance() + 1.0f)});
-                        droppedItem->setVel(Vector2Scale(lookingDir, 5000.0f));
+                        //multiplaying pickup distance by 2.5f is cheap trick to make it work,
+                        //item should be dropped in playerPos + lookingDir * (pickupDistance + playerSize),
+                        //where playerSize is radius in case if player is circle or something else like rectangle size in that direction
+                        auto droppedItem = std::make_shared<Entity::DropedItem>(item, Vector2{playerPos.x + lookingDir.x * (item->getPickupDistance() * 2.5f), playerPos.y + lookingDir.y * (item->getPickupDistance() * 2.5f)});
+                        droppedItem->setVel(Vector2Scale(lookingDir, 1000.0f));
                         entitys.push_back(std::static_pointer_cast<PhysicsObject>(droppedItem));
                     }
                 }
@@ -64,6 +68,12 @@ void Game::run() {
                 if(IsKeyDown(KEY_R)) {
                     auto& items = this->player->getItems();
                     items[0] = std::make_unique<Items::GunItem>();
+                }
+
+                if(GetMouseWheelMove() > 0.1f) {
+                    player->decraseSelectedItemIndex();
+                } else if(GetMouseWheelMove() < -0.1f) {
+                    player->incraseSelectedItemIndex();
                 }
             }
 
@@ -75,7 +85,7 @@ void Game::run() {
                     auto item = std::dynamic_pointer_cast<Entity::DropedItem>(entity);
                     if(item) {
                         auto dist = Vector2Distance(this->player->getPos(), item->getPos());
-                        if(dist <= item->getItem()->getPickupDistance()) {
+                        if(player->isColliding(item)) {
                             auto& items = player->getItems();
                             for(int i = 0;i < items.size();i++) {
                                 if(items[i] == nullptr) {
@@ -123,7 +133,13 @@ void Game::run() {
                 ImGui::Text("player vel: x:%f, y:%f", player->getVel().x, player->getVel().y);
                 ImGui::Text("player accel: x:%f, y:%f", player->getAccel().x, player->getAccel().y);
                 ImGui::Text("player colliding: %d", colliding);
-                ImGui::Text("player items: %d", player->getItems().size());
+                int items = 0;
+                for(auto& item:player->getItems()) {
+                    if(item) {
+                        items++;
+                    }
+                }
+                ImGui::Text("player items: %d", items);
             }
             ImGui::End();
         }

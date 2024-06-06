@@ -64,6 +64,7 @@ class PhysicsObject: public Renderer::Renderable2DObject {
 
     bool isColliding(const PhysicsObject& other);
     bool isColliding(const PhysicsObject* other);
+    bool isColliding(const std::shared_ptr<PhysicsObject> other);
 
     std::optional<Vector2> getIntersectionPoint(Vector2 origin, Vector2 end);
 
@@ -90,6 +91,8 @@ namespace Entity {
 
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE>& getItems();
         int getSelctedItemIndex();
+        void incraseSelectedItemIndex();
+        void decraseSelectedItemIndex();
         std::optional<std::shared_ptr<Items::AbstractItem>> getSelectedItem();
 
         void setLookingDirection(Vector2);

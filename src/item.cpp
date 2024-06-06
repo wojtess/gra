@@ -9,7 +9,7 @@ namespace Items {
         return pickupDistance;
     }
 
-    GunItem::GunItem(): AbstractItem(22.f) {}
+    GunItem::GunItem(): AbstractItem(10.f) {}
 
     void GunItem::shoot(std::unique_ptr<Entity::Zombie>& other) {
 

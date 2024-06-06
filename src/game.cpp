@@ -213,7 +213,7 @@ void Game::setScreen(std::unique_ptr<Screen::AbstractScreen> screen) {
     this->screen = std::move(screen);
 }
 
-std::vector<std::shared_ptr<PhysicsObject>> Game::getEntitys() const {
+std::vector<std::shared_ptr<PhysicsObject>>& Game::getEntitys() {
     return entitys;
 }
 

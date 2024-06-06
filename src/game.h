@@ -15,7 +15,7 @@ class Game {
     void setScreen(std::unique_ptr<Screen::AbstractScreen>);
     void run();
     void newGame();
-    std::vector<std::shared_ptr<PhysicsObject>> getEntitys() const;
+    std::vector<std::shared_ptr<PhysicsObject>>& getEntitys();
     std::shared_ptr<Entity::Player> getPlayer();
     void setPlayer(std::shared_ptr<Entity::Player>);
 };

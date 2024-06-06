@@ -336,6 +336,22 @@ namespace Entity {
     }
 
     void Zombie::tick(Game& game) {
+        if (hp <= 0) {
+            auto& entitys = game.getEntitys();
+            auto iterator = entitys.begin();
+            while(iterator != entitys.end()) {
+                if((*iterator).get() == (PhysicsObject*)(this)) {
+                    iterator = entitys.erase(iterator);
+                } else {
+                    iterator++;
+                }
+            }
+            return;
+        };
+
+
+
+        
         auto player = game.getPlayer();
         auto playerPos = player->getPos();
         if(Vector2Distance(playerPos, getPos()) < 500.0f) {

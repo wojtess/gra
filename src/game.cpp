@@ -77,8 +77,10 @@ void Game::run() {
                 skipDropping:
 
                 if(IsKeyDown(KEY_R)) {
-                    auto& items = this->player->getItems();
-                    items[0] = std::make_unique<Items::GunItem>();
+                    auto itemek = player->getSelectedItem();
+                    if (itemek) {
+                        (*itemek)->use(player);
+                    };
                 }
 
                 if(GetMouseWheelMove() > 0.1f) {
@@ -143,6 +145,7 @@ void Game::run() {
             }
         }
 
+
         if (objectOnCoursor) {
             auto zombieObject = std::dynamic_pointer_cast<Entity::Zombie>(objectOnCoursor->object);
             if (zombieObject) {
@@ -154,6 +157,15 @@ void Game::run() {
                     }
                 };
             };
+        } else {
+            auto item = player->getSelectedItem();
+                if (item) {
+                    auto gun = std::dynamic_pointer_cast<Items::GunItem>(*item);
+                    if(gun) {
+                        auto zombie = std::shared_ptr<Entity::Zombie>();
+                        gun->shoot(zombie);
+                    }
+                };
         };
         }
         }

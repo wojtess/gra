@@ -328,6 +328,7 @@ namespace Entity {
         for(auto& shape:shapes) {
             shape->setPos(pos);
         }
+        this->hp = 10;
     }
 
     void Zombie::render() {

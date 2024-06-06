@@ -346,6 +346,7 @@ namespace Entity {
                     iterator++;
                 }
             }
+            entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::MedkitItem>(), getPos())));
             return;
         };
 
@@ -385,6 +386,8 @@ namespace Entity {
         for(auto& shape:shapes) {
             shape->setPos(pos);
         }
+
+        hp = 100;
     }
 
     void Player::render() {
@@ -395,8 +398,16 @@ namespace Entity {
         return selectedItem;
     }
 
+    void Player::setHp(int nowe) {
+        hp = nowe;
+    }
+
+    int Player::getHp() {
+        return hp;
+    }
+
     std::optional<std::shared_ptr<Items::AbstractItem>> Player::getSelectedItem() {
-        if(selectedItem < 0 || selectedItem >= items.size()) {
+        if(selectedItem < 0 || selectedItem >= items.size() || items[selectedItem] == nullptr) {
             return {};
         }
         return items[selectedItem];

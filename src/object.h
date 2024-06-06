@@ -95,6 +95,8 @@ namespace Entity {
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE> items;
         int selectedItem;
 
+        int hp;
+
         public:
         Player(Vector2 pos);
         void render() override;
@@ -107,6 +109,9 @@ namespace Entity {
 
         void setLookingDirection(Vector2);
         Vector2 getLookingDirection() const;
+
+        void setHp(int nowe);
+        int getHp();
     };
 
     class DropedItem: public PhysicsObject {

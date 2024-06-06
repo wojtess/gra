@@ -35,4 +35,20 @@ namespace Items {
     void GunItem::render() {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, GREEN);
     }
+
+    MedkitItem::MedkitItem(): AbstractItem(10.f) {
+        
+    }
+
+    void MedkitItem::use(std::shared_ptr<Entity::Player> player) {
+        if(player->getHp() >= 100) {
+            return;
+        }
+        player->setHp(100);
+        player->getItems()[player->getSelctedItemIndex()] = std::shared_ptr<Items::AbstractItem>();
+    }
+
+    void MedkitItem::render() {
+        DrawCircleV(Vector2{0.f, 0.f}, 10.0f, BLUE);
+    }
 }

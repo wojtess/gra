@@ -28,4 +28,11 @@ namespace Items {
         void use(std::shared_ptr<Entity::Player>) override;
         void render() override;
     };
+
+    class MedkitItem: public AbstractItem {
+        public:
+        MedkitItem();
+        void use(std::shared_ptr<Entity::Player>) override;
+        void render() override;
+    };
 }

@@ -168,6 +168,13 @@ void Game::run() {
                 };
         };
         }
+
+        if(IsKeyPressed(KEY_E)) {
+           auto item = player->getSelectedItem();
+            if (item) {
+                (*item)->use(player);
+            }; 
+        }
         }
         
 

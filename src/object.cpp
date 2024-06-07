@@ -337,6 +337,7 @@ bool PhysicsObject::isColliding(const std::shared_ptr<PhysicsObject> other) {
 
 namespace Entity {
     Zombie::Zombie(Vector2 pos) {
+        tex = LoadTexture("../textures/zombie.png");
         this->pos = pos;
         shapes.push_back(std::make_shared<Shapes::Circle>(10.0f));
         for(auto& shape:shapes) {
@@ -345,8 +346,13 @@ namespace Entity {
         this->hp = 10;
     }
 
+    Zombie::~Zombie() {
+        UnloadTexture(tex);
+    }
+
     void Zombie::render() {
-        DrawCircle(0, 0, 10, RED);
+        DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 10});
+        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,40,40}, Vector2{20, 20}, 0.0f, WHITE);
     }
 
     void Zombie::tick(Game& game) {
@@ -365,12 +371,10 @@ namespace Entity {
         };
 
 
-
-        
         auto player = game.getPlayer();
         auto playerPos = player->getPos();
 
-        if(Vector2Distance(playerPos, getPos()) < 15.0f) {
+        if(Vector2Distance(playerPos, getPos()) < 25.0f) {
             player->setHp(player->getHp() - 5.f * GetFrameTime());
         }
 
@@ -407,10 +411,17 @@ namespace Entity {
         }
 
         hp = 100.0f;
+
+        tex = LoadTexture("../textures/guy.png");
+    }
+
+    Player::~Player() {
+        UnloadTexture(tex);
     }
 
     void Player::render() {
-        DrawCircle(0, 0, 10, BLUE);
+        DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
     }
 
     int Player::getSelctedItemIndex() {

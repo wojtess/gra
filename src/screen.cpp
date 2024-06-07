@@ -174,7 +174,7 @@ namespace Screen {
     }
 
     GameScreen::GameScreen(): paused(false) {
-        camera.zoom = 1.5f;
+        camera.zoom = 2.5f;
         camera.rotation = 0.0f;
     }
     GameScreen::~GameScreen() {}

@@ -13,8 +13,12 @@ namespace Items {
         return uses;
     }
 
-    GunItem::GunItem(float damage, float fireRate): AbstractItem(10.f), damage(damage), fireRate(fireRate) {
-        uses = 10;
+    GunItem::GunItem(float damage, int ammoCapacity, float fireRate): AbstractItem(10.f), damage(damage), fireRate(fireRate), ammoCapacity(ammoCapacity) {
+        uses = ammoCapacity;
+    }
+
+    GunItem::GunItem(float damage, int ammoCapacity): AbstractItem(10.f), damage(damage), ammoCapacity(ammoCapacity) {
+        uses = ammoCapacity;
     }
 
     bool GunItem::shoot(std::shared_ptr<Entity::Zombie>& other) {
@@ -22,21 +26,21 @@ namespace Items {
             return false;
         };
         if (other) {
-            other->setHp(other->getHp() - 1.0f);
+            other->setHp(other->getHp() - damage);
         };
         uses--;
         return true;
     }
 
     void GunItem::use(std::shared_ptr<Entity::Player> player) {
-        uses = 10;
+        uses = ammoCapacity;
     }
 
     void GunItem::render() {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, GREEN);
     }
 
-    Pistol::Pistol(): GunItem(0.5f, 1.0f) {
+    Pistol::Pistol(): GunItem(0.5f, 17) {
         tex = LoadTexture("../textures/gun1.png");
     }
 
@@ -49,7 +53,7 @@ namespace Items {
         DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
     }
 
-    AkMachineGun::AkMachineGun(): GunItem(1.5f, 0.2f) {
+    AkMachineGun::AkMachineGun(): GunItem(2.5f, 30, 1.0f) {
         tex = LoadTexture("../textures/ak47.png");
     }
 
@@ -60,11 +64,14 @@ namespace Items {
     void AkMachineGun::render() {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
         DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
-    
     }
 
     MedkitItem::MedkitItem(): AbstractItem(10.f) {
-        
+        tex = LoadTexture("../textures/med.png");
+    }
+
+    MedkitItem::~MedkitItem() {
+        UnloadTexture(tex);
     }
 
     void MedkitItem::use(std::shared_ptr<Entity::Player> player) {
@@ -76,6 +83,7 @@ namespace Items {
     }
 
     void MedkitItem::render() {
-        DrawCircleV(Vector2{0.f, 0.f}, 10.0f, BLUE);
+        DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
     }
 }

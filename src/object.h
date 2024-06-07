@@ -77,19 +77,23 @@ class PhysicsObject: public Renderer::Renderable2DObject {
 
 namespace Entity {
     class Zombie: public PhysicsObject {
+        private:
+        Texture2D tex;
+
+        int hp;
         public:
         Zombie(Vector2 pos);
+        ~Zombie();
         void render() override;
         //tick is overrided, beacuse zombie need to have "ai" that will follow player
         void tick(Game&) override;
         void setHp(int nowe);
         int getHp();
-        private:
-        int hp;
     };
 
     class Player: public PhysicsObject {
         private:
+        Texture2D tex;
         //lookingDirection is normalized value, only direction is import so this could be saved as one float value, but for easier implementation it is stored as vector2
         Vector2 lookingDirection;
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE> items;
@@ -99,6 +103,7 @@ namespace Entity {
 
         public:
         Player(Vector2 pos);
+        ~Player();
         void render() override;
 
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE>& getItems();

@@ -6,6 +6,7 @@
 #include "item.h"
 #include "raymath.h"
 #include <optional>
+#include <cstdlib>
 
 void Game::run() {
     InitWindow(1280, 720, "game");
@@ -15,7 +16,34 @@ void Game::run() {
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-200.0f, -100.0f})));
 
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{20.0f, 20.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, RED)));
-    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::GunItem>(), Vector2{-100.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::AkMachineGun>(), Vector2{-100.0f, -100.0f})));
+
+    srand( time( NULL ) );
+
+    //dodawanie losowych itemow
+    for(int i = 0;i < 10;i++) {
+        std::shared_ptr<Items::GunItem> item;
+        int r = rand() % 2;
+        if(r == 1) {
+            item = std::make_shared<Items::AkMachineGun>();
+        } else {
+            item = std::make_shared<Items::Pistol>();
+        }
+        auto nowyItemek = std::make_shared<Entity::DropedItem>(item, Vector2{(float)(rand() % 500 - 250), (float)(rand() % 500 - 250)});
+        bool kolizja = false;
+        for(const auto& e:entitys) {
+            if(nowyItemek->isColliding(e)) {
+                //jest kolizja z entity
+                kolizja = true;
+                break;
+            }
+        }
+        if(kolizja) {
+            i--;
+        } else {
+            entitys.push_back(nowyItemek);
+        }
+    }
 
     while(true) {
         //if player is null that means that world dont exist and we are on diffrent screen

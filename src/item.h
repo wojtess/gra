@@ -22,10 +22,31 @@ namespace Items {
 
     //GunItem is special one, beacuse you can shot somebody with it
     class GunItem: public AbstractItem {
+        private:
+        float damage;
+        float fireRate;
         public:
-        GunItem();
+        GunItem(float damage, float fireRate);
         bool shoot(std::shared_ptr<Entity::Zombie>&);
         void use(std::shared_ptr<Entity::Player>) override;
+        void render() override;
+    };
+
+    class Pistol: public GunItem {
+        private:
+        Texture2D tex;
+        public:
+        Pistol();
+        ~Pistol();
+        void render() override;
+    };
+
+    class AkMachineGun: public GunItem {
+        private:
+        Texture2D tex;
+        public:
+        AkMachineGun();
+        ~AkMachineGun();
         void render() override;
     };
 

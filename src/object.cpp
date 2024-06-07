@@ -217,8 +217,6 @@ void PhysicsObject::tick(Game& game) {
                 if(auto vec = shape->isColliding(otherShape)) {
                     Vector2 normal = Vector2Normalize(*vec);
                     float dot = Vector2DotProduct(vel, normal);
-                    
-                    vel = Vector2{0, 0};
                     if(dot < 0) {
                         Vector2 projection = {dot * normal.x, dot * normal.y};
                         vel = Vector2Subtract(vel, projection);

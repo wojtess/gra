@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
 project(infa-game)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -43,10 +47,10 @@ add_custom_command(
 	DEPENDS ${PROJECT_NAME})
 
 #set(raylib_VERBOSE 1)
-target_link_libraries(${PROJECT_NAME} raylib)
+target_link_libraries(${PROJECT_NAME} raylib dl pthread)
 
 # Web Configurations
-if (${PLATFORM} STREQUAL "Web")
+if ("${PLATFORM}" STREQUAL "Web")
     # Tell Emscripten to build an example.html file.
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
 endif()

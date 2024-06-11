@@ -241,26 +241,32 @@ void Game::run() {
             this->screen->render(*this);
 
         {
-            ImGui::Begin("debug");
-            if(player) {
-                int colliding = 0;
-                for(const auto& entity:entitys) {
-                    if(player->isColliding(entity.get()))
-                        colliding++;
-                }
-                ImGui::Text("player pos: x:%f, y:%f", player->getPos().x, player->getPos().y);
-                ImGui::Text("player vel: x:%f, y:%f", player->getVel().x, player->getVel().y);
-                ImGui::Text("player accel: x:%f, y:%f", player->getAccel().x, player->getAccel().y);
-                ImGui::Text("player colliding: %d", colliding);
-                int items = 0;
-                for(auto& item:player->getItems()) {
-                    if(item) {
-                        items++;
-                    }
-                }
-                ImGui::Text("player items: %d", items);
+            static bool debug = false;
+            if(IsKeyReleased(KEY_F10)) {
+                debug = !debug;
             }
-            ImGui::End();
+            if(debug) {
+                ImGui::Begin("debug");
+                if(player) {
+                    int colliding = 0;
+                    for(const auto& entity:entitys) {
+                        if(player->isColliding(entity.get()))
+                            colliding++;
+                    }
+                    ImGui::Text("player pos: x:%f, y:%f", player->getPos().x, player->getPos().y);
+                    ImGui::Text("player vel: x:%f, y:%f", player->getVel().x, player->getVel().y);
+                    ImGui::Text("player accel: x:%f, y:%f", player->getAccel().x, player->getAccel().y);
+                    ImGui::Text("player colliding: %d", colliding);
+                    int items = 0;
+                    for(auto& item:player->getItems()) {
+                        if(item) {
+                            items++;
+                        }
+                    }
+                    ImGui::Text("player items: %d", items);
+                }
+                ImGui::End();
+            }
         }
         
         //end drawning imgui

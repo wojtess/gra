@@ -516,9 +516,6 @@ void Building::render(Renderer::ResourceMap& resourceMap, bool flipped, bool eff
         Vector2 v1 = vertices[i - 1];
         Vector2 v3 = vertices[i];
 
-        if((v2.x - v1.x) * (v2.y + v1.y) + (v2.x - v3.x) * (v2.y + v3.y) > 0) {
-            std::swap(v2, v3);
-        }
         DrawTriangle(v1, v2, v3, color);
     }
 }

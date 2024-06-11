@@ -385,6 +385,10 @@ namespace Entity {
             for(auto e:game.getEntitys()) {
                 //check if object(e varible) is this zombie
                 if((void*)e.get() != (void*)this) {
+                    //check if e is zombie or dropped item, zobie can see throught other zombies as well droppeditems
+                    if(std::dynamic_pointer_cast<Zombie>(e) || std::dynamic_pointer_cast<DropedItem>(e)) {
+                        continue;
+                    }
                     //check if zombie(this) is looking at object
                     if(auto interscetion = e->getIntersectionPoint(getPos(), Vector2Add(getPos(), Vector2Scale(dir, 100.0f)))) {
                         //if zombie is looking at e check if object is befoer player

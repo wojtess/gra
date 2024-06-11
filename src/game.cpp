@@ -14,6 +14,15 @@ void Game::run() {
     rlImGuiSetup(true);
 
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-200.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-210.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-220.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-230.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-240.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-250.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-260.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-270.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-280.0f, -100.0f})));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-290.0f, -100.0f})));
 
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{20.0f, 20.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, RED)));
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::AkMachineGun>(), Vector2{-100.0f, -100.0f})));

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <limits>
 #include "game.h"
+#include "constants.h"
 
 void Entity::Zombie::setHp(int nowe) {
     hp = nowe;
@@ -342,7 +343,7 @@ namespace Entity {
         for(auto& shape:shapes) {
             shape->setPos(pos);
         }
-        this->hp = 10;
+        this->hp = ZOMBIE_HP;
     }
 
     void Zombie::render(Renderer::ResourceMap& resourceMap) {
@@ -370,11 +371,11 @@ namespace Entity {
         auto player = game.getPlayer();
         auto playerPos = player->getPos();
 
-        if(Vector2Distance(playerPos, getPos()) < 25.0f) {
-            player->setHp(player->getHp() - 5.f * GetFrameTime());
+        if(Vector2Distance(playerPos, getPos()) < ZOMBIE_ATTACK_DISTNACE) {
+            player->setHp(player->getHp() - ZOMBIE_DAMAGE * GetFrameTime());
         }
 
-        if(Vector2Distance(playerPos, getPos()) < 500.0f) {
+        if(Vector2Distance(playerPos, getPos()) < ZOMBIE_SIGHT) {
             //directtion where is player
             auto dir = Vector2Normalize(Vector2Subtract(playerPos, getPos()));
             //zombie are stupid so they just go where they see player
@@ -410,7 +411,7 @@ namespace Entity {
             shape->setPos(pos);
         }
 
-        hp = 100.0f;
+        hp = PLAYER_HP;
     }
 
     void Player::render(Renderer::ResourceMap& resourceMap) {

@@ -337,7 +337,7 @@ bool PhysicsObject::isColliding(const std::shared_ptr<PhysicsObject> other) {
 }
 
 namespace Entity {
-    Zombie::Zombie(Vector2 pos) {
+    Zombie::Zombie(Vector2 pos, float speed): speed(speed) {
         this->pos = pos;
         shapes.push_back(std::make_shared<Shapes::Circle>(10.0f));
         for(auto& shape:shapes) {
@@ -363,7 +363,9 @@ namespace Entity {
                     iterator++;
                 }
             }
-            entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::MedkitItem>(), getPos())));
+            if((rand() % 100)/100.0f <= MEDKIT_CHANCE) {
+                entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::MedkitItem>(), getPos())));
+            }
             return;
         };
 
@@ -396,7 +398,7 @@ namespace Entity {
                     }
                 }
             }
-            setAccel(Vector2Scale(dir, 800.0f));
+            setAccel(Vector2Scale(dir, speed));
         } else {
             setAccelToZero:
             setAccel(Vector2{0.0f, 0.0f});

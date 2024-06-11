@@ -170,7 +170,7 @@ void Game::run() {
 
             if(zombieCount < ZOMBIE_COUNT) {
                 for(int i = 0;i<ZOMBIE_COUNT-zombieCount;i++) {
-                    auto zombie = std::make_shared<Entity::Zombie>(Vector2{(float)((rand() % 500 + 250) * ((rand() % 2) * 2 - 1)) + player->getPos().x, (float)((rand() % 500 + 250) * ((rand() % 2) * 2 - 1)) + player->getPos().y});
+                    auto zombie = std::make_shared<Entity::Zombie>(Vector2{(float)((rand() % 500 + 250) * ((rand() % 2) * 2 - 1)) + player->getPos().x, (float)((rand() % 500 + 250) * ((rand() % 2) * 2 - 1)) + player->getPos().y}, (rand() % (int)(ZOMBIE_MAX_SPEED + ZOMBIE_MIN_SPEED)) - ZOMBIE_MIN_SPEED);
 
                     bool kolizja = false;
                     for(const auto& e:entitys) {

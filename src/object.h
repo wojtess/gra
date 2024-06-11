@@ -78,10 +78,11 @@ class PhysicsObject: public Renderer::Renderable2DObject {
 namespace Entity {
     class Zombie: public PhysicsObject {
         private:
+        float speed;
 
         int hp;
         public:
-        Zombie(Vector2 pos);
+        Zombie(Vector2 pos, float speed);
         void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
         //tick is overrided, beacuse zombie need to have "ai" that will follow player
         void tick(Game&) override;

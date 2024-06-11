@@ -10,6 +10,7 @@
 
 void Game::run() {
     InitWindow(1280, 720, "game");
+    SetExitKey(KEY_NULL);
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     rlImGuiSetup(true);
 

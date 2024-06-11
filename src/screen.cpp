@@ -79,12 +79,6 @@ namespace Screen {
         auto width = GetScreenWidth();
         auto height = GetScreenHeight();
 
-        Hud::Button button([&game]() {
-            game.setScreen(std::make_unique<Screen::HomeScreen>());
-        }, "back", {0,0}, {200, 200}, 20);
-
-        // button.render();
-
         camera.offset = Vector2{width / 2.0f, height / 2.0f};
         camera.target = player->getPos();
 
@@ -173,7 +167,10 @@ namespace Screen {
 
         if(paused) {
             DrawRectangle(0,0, width, height, Color{0x0, 0x0, 0x0, 150});
-            DrawText("paused", width / 2, height / 2, 20, RED);
+            DrawTextCenter("paused", width / 2, height / 2, 20, RED);
+            Hud::Button([&game]() {
+                game.setScreen(std::make_unique<Screen::HomeScreen>());
+            }, "Go to main menu", Vector2{width / 2.0f - 150.f, height / 2.0f + 20.0f}, Vector2{300.f, 80.f}, 20).render();
         }
     }
 

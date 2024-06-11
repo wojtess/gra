@@ -131,9 +131,15 @@ void Game::run() {
             }
 
             //tick entity and remove ones that are picked from the ground(items only);
+            //also to dont create another loop check how many zombies is there and and new if there is low count of zombies on map
+            int zombieCount = 0;
             for(auto it = entitys.begin(); it != entitys.end();) {
                 auto entity = *it;
                 entity->tick(*this);
+                if(std::dynamic_pointer_cast<Entity::Zombie>(entity)) {
+                    zombieCount++;
+                }
+
                 {
                     auto item = std::dynamic_pointer_cast<Entity::DropedItem>(entity);
                     if(item) {
@@ -160,6 +166,26 @@ void Game::run() {
                 }
                 inc:
                 it++;
+            }
+
+            if(zombieCount < ZOMBIE_COUNT) {
+                for(int i = 0;i<ZOMBIE_COUNT-zombieCount;i++) {
+                    auto zombie = std::make_shared<Entity::Zombie>(Vector2{(float)((rand() % 500 + 250) * ((rand() % 2) * 2 - 1)) + player->getPos().x, (float)((rand() % 500 + 250) * ((rand() % 2) * 2 - 1)) + player->getPos().y});
+
+                    bool kolizja = false;
+                    for(const auto& e:entitys) {
+                        if(zombie->isColliding(e)) {
+                            //jest kolizja z entity
+                            kolizja = true;
+                            break;
+                        }
+                    }
+                    if(kolizja) {
+                        i--;
+                    } else {
+                        entitys.push_back(zombie);
+                    }
+                }
             }
 
         if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {

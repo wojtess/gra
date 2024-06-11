@@ -146,26 +146,22 @@ void Game::run() {
                         auto dist = Vector2Distance(this->player->getPos(), item->getPos());
                         if(player->isColliding(item)) {
                             auto& items = player->getItems();
+                            bool removed = false;
                             for(int i = 0;i < items.size();i++) {
                                 if(items[i] == nullptr) {
                                     items[i] = item->getItem();
                                     it = entitys.erase(it);
-                                    //when we find item, exit loop and tell next loop that we need to continue,
-                                    //we need to continue in outer loop(one that iterates over entitys)
-                                    //beacuse we dont want to execute last instruction in this loop(it++;)
-                                    goto removed;
+                                    removed = true;
+                                    break;
                                 }
                             }
-                            //if we are here then skip `continue;`,
-                            //`inc` label could be after `continue;`, but C dont allow this for some reason
-                            goto inc;
-                            removed:
-                            continue;
+                            if(removed) {
+                                continue;
+                            }
                         }
                     }
                 }
-                inc:
-                it++;
+                ++it;
             }
 
             if(zombieCount < ZOMBIE_COUNT) {

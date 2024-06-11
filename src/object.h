@@ -59,6 +59,7 @@ class PhysicsObject: public Renderer::Renderable2DObject {
     public:
     PhysicsObject(float dumpingFactor);
     PhysicsObject();
+    virtual ~PhysicsObject() = default;
 
     void setVel(Vector2);
     Vector2 getVel() const;

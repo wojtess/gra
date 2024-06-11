@@ -10,3 +10,5 @@ namespace RayCastUtils {
 }
 
 bool isInside(Vector2 pos1, Vector2 pos2, Vector2 size);
+
+void DrawTextCenter(const char *text, int posX, int posY, int fontSize, Color color);

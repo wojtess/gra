@@ -71,3 +71,14 @@ bool isInside(Vector2 pos1, Vector2 pos2, Vector2 size) {
     return (pos1.x >= left && pos1.x <= right &&
             pos1.y >= top && pos1.y <= bottom);
 }
+
+void DrawTextCenter(const char *text, int posX, int posY, int fontSize, Color color) {
+    int defaultFontSize = 10;
+    if (fontSize < defaultFontSize) fontSize = defaultFontSize;
+    int spacing = fontSize/defaultFontSize;
+    auto textSize = MeasureTextEx(GetFontDefault(), text, (float)fontSize, (float)spacing);
+    Vector2 textPos;
+    posX += (textSize.x) / -2;
+    posY += (textSize.y) / -2;
+    DrawText(text, posX, posY, fontSize, color);
+}

@@ -45,7 +45,7 @@ void Game::run() {
         }
     }
 
-    while(true) {
+    while(!WindowShouldClose()) {
         //if player is null that means that world dont exist and we are on diffrent screen
         if(this->player) {
             //tick world and shit
@@ -150,7 +150,7 @@ void Game::run() {
                 it++;
             }
 
-        if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         struct rayCastData_t {
             std::shared_ptr<PhysicsObject> object;
             Vector2 pos;
@@ -173,28 +173,27 @@ void Game::run() {
             }
         }
 
-
-        if (objectOnCoursor) {
-            auto zombieObject = std::dynamic_pointer_cast<Entity::Zombie>(objectOnCoursor->object);
-            if (zombieObject) {
-                auto item = player->getSelectedItem();
-                if (item) {
-                    auto gun = std::dynamic_pointer_cast<Items::GunItem>(*item);
-                    if(gun) {
-                        gun->shoot(zombieObject);
-                    }
-                };
-            };
-        } else {
-            auto item = player->getSelectedItem();
-                if (item) {
-                    auto gun = std::dynamic_pointer_cast<Items::GunItem>(*item);
-                    if(gun) {
-                        auto zombie = std::shared_ptr<Entity::Zombie>();
+        auto item = player->getSelectedItem();
+        if (item) {
+            auto gun = std::dynamic_pointer_cast<Items::GunItem>(*item);
+            if(gun) {
+                std::shared_ptr<Entity::Zombie> zombie;
+                if (objectOnCoursor) {
+                    zombie = std::dynamic_pointer_cast<Entity::Zombie>(objectOnCoursor->object);   
+                }
+                //if firerate exist that means that gun is automatic
+                if(gun->getFireRate()) {
+                    gun->shoot(zombie);
+                } else {
+                    //when firerate dont exist that means that gun in not automatic
+                    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                         gun->shoot(zombie);
                     }
-                };
+                }
+            }
         };
+
+        
         }
 
         if(IsKeyPressed(KEY_E)) {
@@ -202,6 +201,18 @@ void Game::run() {
             if (item) {
                 (*item)->use(player);
             }; 
+        }
+
+        for(auto& item:player->getItems()) {
+            if(item) {
+                auto action = item->getCurrentAction();
+                if(action) {
+                    if((*action).getRemainingTime() <= 0) {
+                        (*action).callCallback();
+                        item->clearAction();
+                    }
+                }
+            }
         }
         }
         

@@ -3,6 +3,7 @@
 #include "game.h"
 #include "rlgl.h"
 #include "raymath.h"
+#include "utils.h"
 
 namespace Screen {
     void HomeScreen::render(Game& game) {
@@ -19,7 +20,7 @@ namespace Screen {
             game.setScreen(std::make_unique<Screen::GameScreen>());
         }, "Play", {100, 100}, {200, 100}, 20);
 
-        Hud::Label name("nazwa gry", {width / 2.0f, 100}, Renderer::DEFAULT_TEHEME.getTextColor(), 20);
+        Hud::Label name("zombieland", {width / 2.0f, 100}, Renderer::DEFAULT_TEHEME.getTextColor(), 20);
 
         name.render();
         buttonExit.render();
@@ -160,11 +161,14 @@ namespace Screen {
                         rlTranslatef(((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + size.x / 2, height - size.y - y_offset + size.y / 2, 0.0f);
                         item->render();
                     rlPopMatrix();
+                    if(auto action = item->getCurrentAction()) {
+                        DrawTextCenter(TextFormat("%2.1f",action->getRemainingTime()), ((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + size.x / 2, height - size.y - y_offset + size.y - size.y / 2, 20, RED);
+                    }
                     DrawText(TextFormat("%d", item->getUses()), ((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + 10, height - size.y - y_offset + size.y - 25, 20, RED);
                 }
             }
 
-            DrawText(TextFormat("hp: %f", player->getHp()), 100.0f, height - 100.0f, 30.0f, BLUE);
+            DrawText(TextFormat("hp: %2.1f", player->getHp()), 100.0f, height - 100.0f, 30.0f, BLUE);
         }
 
         if(paused) {

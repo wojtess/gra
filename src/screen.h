@@ -35,4 +35,12 @@ class GameScreen: public AbstractScreen {
     ~GameScreen();
 };
 
+class GameOver: public AbstractScreen {
+    private:
+    Entity::Player::Stats stats;
+    public:
+    GameOver(Entity::Player::Stats);
+    void render(Game&) override;
+};
+
 };

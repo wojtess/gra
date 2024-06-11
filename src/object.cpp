@@ -354,6 +354,7 @@ namespace Entity {
 
     void Zombie::tick(Game& game) {
         if (hp <= 0) {
+            game.getPlayer()->stats.killedZombies++;
             auto& entitys = game.getEntitys();
             auto iterator = entitys.begin();
             while(iterator != entitys.end()) {
@@ -406,8 +407,15 @@ namespace Entity {
         PhysicsObject::tick(game);
     }
 
+    Player::Stats::Stats() {
+        killedZombies = 0;
+        shotedBullets = 0;
+        timeAlive = 0.f;
+    }
+
     Player::Player(Vector2 pos): PhysicsObject(8.f), selectedItem(0) {
         this->pos = pos;
+        startTime = GetTime();
         shapes.push_back(std::make_shared<Shapes::Circle>(10.0f));
         for(auto& shape:shapes) {
             shape->setPos(pos);
@@ -451,6 +459,10 @@ namespace Entity {
 
     Vector2 Player::getLookingDirection() const {
         return lookingDirection;
+    }
+
+    double Player::getStartTime() const {
+        return startTime;
     }
 
     DropedItem::DropedItem(std::shared_ptr<Items::AbstractItem> item, Vector2 pos): item(item) {

@@ -16,50 +16,16 @@ void Game::run() {
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     rlImGuiSetup(true);
 
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-200.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-210.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-220.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-230.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-240.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-250.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-260.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-270.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-280.0f, -100.0f})));
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::Zombie>(Vector2{-290.0f, -100.0f})));
-
-    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{20.0f, 20.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, RED)));
-    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::AkMachineGun>(), Vector2{-100.0f, -100.0f})));
-
-    srand( time( NULL ) );
-
-    //dodawanie losowych itemow
-    for(int i = 0;i < 10;i++) {
-        std::shared_ptr<Items::GunItem> item;
-        int r = rand() % 2;
-        if(r == 1) {
-            item = std::make_shared<Items::AkMachineGun>();
-        } else {
-            item = std::make_shared<Items::Pistol>();
-        }
-        auto nowyItemek = std::make_shared<Entity::DropedItem>(item, Vector2{(float)(rand() % 500 - 250), (float)(rand() % 500 - 250)});
-        bool kolizja = false;
-        for(const auto& e:entitys) {
-            if(nowyItemek->isColliding(e)) {
-                //jest kolizja z entity
-                kolizja = true;
-                break;
-            }
-        }
-        if(kolizja) {
-            i--;
-        } else {
-            entitys.push_back(nowyItemek);
-        }
-    }
-
     while(!WindowShouldClose()) {
         //if player is null that means that world dont exist and we are on diffrent screen
         if(this->player) {
+            if(this->player->getHp() <= 0) {
+                this->player->stats.timeAlive = GetTime() - this->player->getStartTime();
+                this->setScreen(std::make_unique<Screen::GameOver>(this->player->stats));
+                this->player.reset();
+                this->entitys.clear();
+                continue;
+            }
             //tick world and shit
             {
                 Vector2 accel = {0.0f, 0.0f};
@@ -217,11 +183,15 @@ void Game::run() {
                 }
                 //if firerate exist that means that gun is automatic
                 if(gun->getFireRate()) {
-                    gun->shoot(zombie);
+                    if(gun->shoot(zombie)) {
+                        player->stats.shotedBullets++;
+                    }
                 } else {
                     //when firerate dont exist that means that gun in not automatic
                     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                        gun->shoot(zombie);
+                        if(gun->shoot(zombie)) {
+                            player->stats.shotedBullets++;
+                        }
                     }
                 }
             }
@@ -305,6 +275,36 @@ void Game::run() {
 
 void Game::newGame() {
     this->player = std::make_shared<Entity::Player>(Vector2{0.0f, 0.0f});
+
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{0.0f, 0.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, GRAY)));
+    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::AkMachineGun>(), Vector2{-100.0f, -100.0f})));
+
+    srand( time( NULL ) );
+
+    //dodawanie losowych itemow
+    for(int i = 0;i < 10;i++) {
+        std::shared_ptr<Items::GunItem> item;
+        int r = rand() % 2;
+        if(r == 1) {
+            item = std::make_shared<Items::AkMachineGun>();
+        } else {
+            item = std::make_shared<Items::Pistol>();
+        }
+        auto nowyItemek = std::make_shared<Entity::DropedItem>(item, Vector2{(float)(rand() % 500 - 250), (float)(rand() % 500 - 250)});
+        bool kolizja = false;
+        for(const auto& e:entitys) {
+            if(nowyItemek->isColliding(e)) {
+                //jest kolizja z entity
+                kolizja = true;
+                break;
+            }
+        }
+        if(kolizja) {
+            i--;
+        } else {
+            entitys.push_back(nowyItemek);
+        }
+    }
 }
 
 void Game::setScreen(std::unique_ptr<Screen::AbstractScreen> screen) {

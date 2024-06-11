@@ -182,7 +182,7 @@ namespace Screen {
 
         if(paused) {
             DrawRectangle(0,0, width, height, Color{0x0, 0x0, 0x0, 150});
-            DrawTextCenter("paused", width / 2, height / 2, 20, RED);
+            DrawTextCenter("paused", width / 2, height / 2, 20, BLACK);
             Hud::Button([&game]() {
                 game.setScreen(std::make_unique<Screen::HomeScreen>());
             }, "Go to main menu", Vector2{width / 2.0f - 150.f, height / 2.0f + 20.0f}, Vector2{300.f, 80.f}, 20).render(game.getResourceMap());
@@ -194,4 +194,20 @@ namespace Screen {
         camera.rotation = 0.0f;
     }
     GameScreen::~GameScreen() {}
+
+    GameOver::GameOver(Entity::Player::Stats s) {
+        stats = s;
+    }
+
+    void GameOver::render(Game& game) {
+        auto width = GetScreenWidth();
+        auto height = GetScreenHeight();
+        DrawTextCenter("Game Over", width / 2, height / 2, 20, RED);
+        DrawTextCenter(TextFormat("Killed %d zombies", stats.killedZombies), width / 2, height / 2 + 20, 20, BLUE);
+        DrawTextCenter(TextFormat("Shooted %d bullets", stats.shotedBullets), width / 2, height / 2 + 40, 20, BLUE);
+        DrawTextCenter(TextFormat("Time alive: %.2f sec", stats.timeAlive), width / 2, height / 2 + 60, 20, BLUE);
+        Hud::Button([&game]() {
+            game.setScreen(std::make_unique<Screen::HomeScreen>());
+        }, "Go to main menu", Vector2{width / 2.0f - 150.f, height / 2.0f + 100.0f}, Vector2{300.f, 80.f}, 20).render(game.getResourceMap());
+    }
 }

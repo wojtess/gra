@@ -92,14 +92,23 @@ namespace Entity {
     };
 
     class Player: public PhysicsObject {
+        public:
+        class Stats {
+            public:
+            Stats();
+            int killedZombies;
+            int shotedBullets;
+            float timeAlive;
+        };
+        Stats stats;
         private:
         //lookingDirection is normalized value, only direction is import so this could be saved as one float value, but for easier implementation it is stored as vector2
         Vector2 lookingDirection;
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE> items;
         int selectedItem;
-
         float hp;
-
+        double startTime;
+        
         public:
         Player(Vector2 pos);
         void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
@@ -115,6 +124,7 @@ namespace Entity {
 
         void setHp(float nowe);
         float getHp();
+        double getStartTime() const;
     };
 
     class DropedItem: public PhysicsObject {

@@ -3,12 +3,26 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <map>
+#include "raylib.h"
 
 namespace Renderer {
 
+
+class ResourceMap {
+    private:
+    std::string texturePath;
+    std::map<std::string, Texture2D> textures;
+    public:
+    //texture path, ex: "path/to/texture"
+    ResourceMap(std::string texturePath);
+    Texture2D getTexture(std::string name);
+    ~ResourceMap();
+};
+
 class Renderable {
     public:
-    virtual void render() = 0;
+    virtual void render(ResourceMap& resourceMap) = 0;
     virtual ~Renderable() = default;
 };
 

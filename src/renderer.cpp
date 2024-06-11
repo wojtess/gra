@@ -21,4 +21,23 @@ namespace Renderer {
         return textColor;
     }
     
+    ResourceMap::ResourceMap(std::string texturePath):texturePath(texturePath) {
+        
+    }
+
+    Texture2D ResourceMap::getTexture(std::string name) {
+        auto txt = textures.find(name);
+        if(txt != textures.end()) {
+            return txt->second;
+        }
+        textures[name] = LoadTexture((texturePath + "/" + name).c_str());
+        return textures[name];
+    }
+
+    ResourceMap::~ResourceMap() {
+        for(auto it = textures.begin(); it != textures.end(); it++) {
+            UnloadTexture(it->second);
+        }
+    }
+
 }

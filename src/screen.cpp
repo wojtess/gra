@@ -22,9 +22,9 @@ namespace Screen {
 
         Hud::Label name("zombieland", {width / 2.0f, 100}, Renderer::DEFAULT_TEHEME.getTextColor(), 20);
 
-        name.render();
-        buttonExit.render();
-        buttonPlay.render();
+        name.render(game.getResourceMap());
+        buttonExit.render(game.getResourceMap());
+        buttonPlay.render(game.getResourceMap());
     }
 
     /*
@@ -126,12 +126,12 @@ namespace Screen {
                 rlPushMatrix();
                     auto pos = entity->getPos();
                     rlTranslatef(pos.x, pos.y, 0);
-                    entity->render();
+                    entity->render(game.getResourceMap());
                 rlPopMatrix();
             }
             rlPushMatrix();
                 rlTranslatef(player->getPos().x, player->getPos().y, 0);
-                player->render();
+                player->render(game.getResourceMap());
             rlPopMatrix();
         EndMode2D();
 
@@ -153,7 +153,7 @@ namespace Screen {
                 if(item) {
                     rlPushMatrix();
                         rlTranslatef(((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + size.x / 2, height - size.y - y_offset + size.y / 2, 0.0f);
-                        item->render();
+                        item->render(game.getResourceMap());
                     rlPopMatrix();
                     if(auto action = item->getCurrentAction()) {
                         DrawTextCenter(TextFormat("%2.1f",action->getRemainingTime()), ((width - (size.x * STACK_SIZE)) / 2.0f) + size.x * i + size.x / 2, height - size.y - y_offset + size.y - size.y / 2, 20, RED);
@@ -170,7 +170,7 @@ namespace Screen {
             DrawTextCenter("paused", width / 2, height / 2, 20, RED);
             Hud::Button([&game]() {
                 game.setScreen(std::make_unique<Screen::HomeScreen>());
-            }, "Go to main menu", Vector2{width / 2.0f - 150.f, height / 2.0f + 20.0f}, Vector2{300.f, 80.f}, 20).render();
+            }, "Go to main menu", Vector2{width / 2.0f - 150.f, height / 2.0f + 20.0f}, Vector2{300.f, 80.f}, 20).render(game.getResourceMap());
         }
     }
 

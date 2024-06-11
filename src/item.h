@@ -51,36 +51,29 @@ namespace Items {
         GunItem(float damage, int ammoCapacity, float reloadTime);
         bool shoot(std::shared_ptr<Entity::Zombie>&);
         void use(std::shared_ptr<Entity::Player>) override;
-        void render() override;
+        void render(Renderer::ResourceMap& resourceMap) override;
         //firerate is used in game.cpp
         std::optional<float> getFireRate();
     };
 
     class Pistol: public GunItem {
         private:
-        Texture2D tex;
         public:
         Pistol();
-        ~Pistol();
-        void render() override;
+        void render(Renderer::ResourceMap& resourceMap) override;
     };
 
     class AkMachineGun: public GunItem {
         private:
-        Texture2D tex;
         public:
         AkMachineGun();
-        ~AkMachineGun();
-        void render() override;
+        void render(Renderer::ResourceMap& resourceMap) override;
     };
 
     class MedkitItem: public AbstractItem {
-        private:
-        Texture2D tex;
         public:
         MedkitItem();
-        ~MedkitItem();
         void use(std::shared_ptr<Entity::Player>) override;
-        void render() override;
+        void render(Renderer::ResourceMap& resourceMap) override;
     };
 }

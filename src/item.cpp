@@ -77,7 +77,7 @@ namespace Items {
         });
     }
 
-    void GunItem::render() {
+    void GunItem::render(Renderer::ResourceMap& resourceMap) {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, GREEN);
     }
 
@@ -86,37 +86,24 @@ namespace Items {
     }
 
     Pistol::Pistol(): GunItem(0.5f, 17, 0.5f) {
-        tex = LoadTexture("../textures/gun1.png");
     }
 
-    Pistol::~Pistol() {
-        UnloadTexture(tex);
-    }
-
-    void Pistol::render() {
+    void Pistol::render(Renderer::ResourceMap& resourceMap) {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+        auto tex = resourceMap.getTexture("gun1.png");
         DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
     }
 
     AkMachineGun::AkMachineGun(): GunItem(2.5f, 30, 3.5f, 10.0f) {
-        tex = LoadTexture("../textures/ak47.png");
     }
 
-    AkMachineGun::~AkMachineGun() {
-        UnloadTexture(tex);
-    }
-
-    void AkMachineGun::render() {
+    void AkMachineGun::render(Renderer::ResourceMap& resourceMap) {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+        auto tex = resourceMap.getTexture("ak47.png");
         DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
     }
 
     MedkitItem::MedkitItem(): AbstractItem(10.f) {
-        tex = LoadTexture("../textures/med.png");
-    }
-
-    MedkitItem::~MedkitItem() {
-        UnloadTexture(tex);
     }
 
     void MedkitItem::use(std::shared_ptr<Entity::Player> player) {
@@ -127,8 +114,9 @@ namespace Items {
         player->getItems()[player->getSelctedItemIndex()] = std::shared_ptr<Items::AbstractItem>();
     }
 
-    void MedkitItem::render() {
+    void MedkitItem::render(Renderer::ResourceMap& resourceMap) {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+        auto tex = resourceMap.getTexture("med.png");
         DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
     }
 }

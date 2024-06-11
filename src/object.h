@@ -78,13 +78,11 @@ class PhysicsObject: public Renderer::Renderable2DObject {
 namespace Entity {
     class Zombie: public PhysicsObject {
         private:
-        Texture2D tex;
 
         int hp;
         public:
         Zombie(Vector2 pos);
-        ~Zombie();
-        void render() override;
+        void render(Renderer::ResourceMap& resourceMap) override;
         //tick is overrided, beacuse zombie need to have "ai" that will follow player
         void tick(Game&) override;
         void setHp(int nowe);
@@ -93,7 +91,6 @@ namespace Entity {
 
     class Player: public PhysicsObject {
         private:
-        Texture2D tex;
         //lookingDirection is normalized value, only direction is import so this could be saved as one float value, but for easier implementation it is stored as vector2
         Vector2 lookingDirection;
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE> items;
@@ -103,8 +100,7 @@ namespace Entity {
 
         public:
         Player(Vector2 pos);
-        ~Player();
-        void render() override;
+        void render(Renderer::ResourceMap& resourceMap) override;
 
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE>& getItems();
         int getSelctedItemIndex();
@@ -124,7 +120,7 @@ namespace Entity {
         std::shared_ptr<Items::AbstractItem> item;
         public:
         DropedItem(std::shared_ptr<Items::AbstractItem>, Vector2);
-        void render() override;
+        void render(Renderer::ResourceMap& resourceMap) override;
         std::shared_ptr<Items::AbstractItem>& getItem();
     };
 }
@@ -135,7 +131,7 @@ class Building: public PhysicsObject {
     public:
         Building(std::vector<Vector2> vertices, Color color);
         Building(std::vector<Vector2> vertices, Color color, Vector2 pos);
-        void render() override;
+        void render(Renderer::ResourceMap& resourceMap) override;
 };
 
 namespace Hud {
@@ -151,7 +147,7 @@ namespace Hud {
             Renderer::Theme theme;
         public:
             Button(std::function<void()> onClick, std::string label, Vector2 pos, Vector2 size, int fontSize = 10, Renderer::Theme theme = Renderer::DEFAULT_TEHEME);
-            void render() override;
+            void render(Renderer::ResourceMap& resourceMap) override;
     };
 
     class Label: public Renderer::Renderable {
@@ -163,6 +159,6 @@ namespace Hud {
             int fontSize;
         public:
             Label(std::string label, Vector2 pos, Color color, int fontSize = 10);
-            void render() override;
+            void render(Renderer::ResourceMap& resourceMap) override;
     };
 }

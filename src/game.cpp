@@ -8,6 +8,8 @@
 #include <optional>
 #include <cstdlib>
 
+Game::Game(): resourceMap("../textures") {}
+
 void Game::run() {
     InitWindow(1280, 720, "game");
     SetExitKey(KEY_NULL);
@@ -291,4 +293,8 @@ std::shared_ptr<Entity::Player> Game::getPlayer() {
 
 void Game::setPlayer(std::shared_ptr<Entity::Player> player) {
     this->player = player;
+}
+
+Renderer::ResourceMap& Game::getResourceMap() {
+    return resourceMap;
 }

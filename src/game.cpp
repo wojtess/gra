@@ -272,11 +272,45 @@ void Game::run() {
     rlImGuiShutdown();
     CloseWindow();
 }
-
+std::shared_ptr<Building> createBuilding(float size, Vector2 pos, Color color) {     return std::make_shared<Building>(std::vector<Vector2>{Vector2{0.0f + pos.x, 0.0f + pos.y}, Vector2{(100.1f * size) + pos.x, 0.0f + pos.y}, Vector2{(100.f * size) + pos.x, (100.1f * size) + pos.y}, Vector2{0.0f + pos.x, (100.0f * size) + pos.y}}, color); }
 void Game::newGame() {
     this->player = std::make_shared<Entity::Player>(Vector2{0.0f, 0.0f});
 
-    entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{0.0f, 0.0f}, Vector2{200.0f, .0f}, Vector2{.0f, 200.0f}, Vector2{200.0f, 200.0f}}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(1.0f, Vector2{50.0f, 50.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(1.5f, Vector2{200.0f, 60.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(1.0f, Vector2{30.0f, 300.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(0.5f, Vector2{-70.0f, 10.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(0.8f, Vector2{-90.0f, -200.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(1.2f, Vector2{0.1f, -500.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(2.0f, Vector2{100.0f,-400.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(3.0f, Vector2{20.0f, 600.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(1.3f, Vector2{-10.0f, 200.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(5.0f, Vector2{-40.0f, 700.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(1.5f, Vector2{-350.0f, -400.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(0.5f, Vector2{500.0f, 3.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(2.0f, Vector2{250.0f, 300.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(3.0f, Vector2{800.0f, 600.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(2.5f, Vector2{500.0f, -20.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(3.0f, Vector2{500.0f, 100.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(2.0f, Vector2{400.0f, -150.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(1.7f, Vector2{600.0f, -50.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(3.0f, Vector2{-500.0f, -100.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(2.0f, Vector2{-400.0f, 200.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(2.0f, Vector2{-600.0f, -600.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(3.0f, Vector2{-700.0f, 800.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(3.0f, Vector2{800.0f, -300.0f}, GRAY)));
+    entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(2.0f, Vector2{-400.0f, 300.0f}, GRAY)));
+
+
+
+
+
+
+
+
+
+    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{0.01f, 0.1f}, Vector2{200.0f, 0.0f}, Vector2{0.0f, 200.0f}}, BLUE)));
+
     // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::AkMachineGun>(), Vector2{-100.0f, -100.0f})));
 
     srand( time( NULL ) );

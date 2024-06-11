@@ -346,7 +346,7 @@ namespace Entity {
         this->hp = ZOMBIE_HP;
     }
 
-    void Zombie::render(Renderer::ResourceMap& resourceMap) {
+    void Zombie::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 10});
         auto tex = resourceMap.getTexture("zombie.png");
         DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,40,40}, Vector2{20, 20}, 0.0f, WHITE);
@@ -414,7 +414,7 @@ namespace Entity {
         hp = PLAYER_HP;
     }
 
-    void Player::render(Renderer::ResourceMap& resourceMap) {
+    void Player::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
         auto tex = resourceMap.getTexture("guy.png");
         DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
@@ -460,7 +460,7 @@ namespace Entity {
         }
     }
 
-    void DropedItem::render(Renderer::ResourceMap& resourceMap) {
+    void DropedItem::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
         item->render(resourceMap);
     }
 
@@ -494,7 +494,7 @@ Building::Building(std::vector<Vector2> vertices, Color color, Vector2 pos): col
     shapes.push_back(std::move(shape));
 }
 
-void Building::render(Renderer::ResourceMap& resourceMap) {
+void Building::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
     auto vertices = shapes[0]->getVertices();
     
     for(int i = 2;i < vertices.size(); i++) {
@@ -519,7 +519,7 @@ namespace Hud {
         textPos.x = (size.x - textSize.x) / 2 + pos.x;
         textPos.y = (size.y - textSize.y) / 2 + pos.y;
     }
-    void Button::render(Renderer::ResourceMap& resourceMap) {
+    void Button::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
         bool inside = isInside(GetMousePosition(), pos, size);
         if(inside) {
             DrawRectangleRec({pos.x, pos.y, size.x, size.y}, theme.getHover());
@@ -547,7 +547,7 @@ namespace Hud {
         textPos.y = (textSize.y) / -2 + pos.y;
         this->pos = textPos;
     }
-    void Label::render(Renderer::ResourceMap& resourceMap) {
+    void Label::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
         DrawText(label.c_str(), pos.x, pos.y, fontSize, color);
     }
 };

@@ -45,35 +45,38 @@ namespace Items {
         float damage;
         std::optional<float> fireRate;
         int ammoCapacity;
-        float lastShootTime;
+
         public:
-        GunItem(float damage, int ammoCapacity, float reloadTime, float fireRate);
+        GunItem(float damage, int ammoCapacity, float reloadTime, float fireRate, float pickupDistance);
         GunItem(float damage, int ammoCapacity, float reloadTime);
         bool shoot(std::shared_ptr<Entity::Zombie>&);
         void use(std::shared_ptr<Entity::Player>) override;
-        void render(Renderer::ResourceMap& resourceMap) override;
+        void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
         //firerate is used in game.cpp
         std::optional<float> getFireRate();
+
+        protected:
+        float lastShootTime;
     };
 
     class Pistol: public GunItem {
         private:
         public:
         Pistol();
-        void render(Renderer::ResourceMap& resourceMap) override;
+        void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
     };
 
     class AkMachineGun: public GunItem {
         private:
         public:
         AkMachineGun();
-        void render(Renderer::ResourceMap& resourceMap) override;
+        void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
     };
 
     class MedkitItem: public AbstractItem {
         public:
         MedkitItem();
         void use(std::shared_ptr<Entity::Player>) override;
-        void render(Renderer::ResourceMap& resourceMap) override;
+        void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
     };
 }

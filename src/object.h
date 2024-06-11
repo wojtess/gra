@@ -82,7 +82,7 @@ namespace Entity {
         int hp;
         public:
         Zombie(Vector2 pos);
-        void render(Renderer::ResourceMap& resourceMap) override;
+        void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
         //tick is overrided, beacuse zombie need to have "ai" that will follow player
         void tick(Game&) override;
         void setHp(int nowe);
@@ -100,7 +100,7 @@ namespace Entity {
 
         public:
         Player(Vector2 pos);
-        void render(Renderer::ResourceMap& resourceMap) override;
+        void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
 
         std::array<std::shared_ptr<Items::AbstractItem>, STACK_SIZE>& getItems();
         int getSelctedItemIndex();
@@ -120,7 +120,7 @@ namespace Entity {
         std::shared_ptr<Items::AbstractItem> item;
         public:
         DropedItem(std::shared_ptr<Items::AbstractItem>, Vector2);
-        void render(Renderer::ResourceMap& resourceMap) override;
+        void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
         std::shared_ptr<Items::AbstractItem>& getItem();
     };
 }
@@ -131,7 +131,7 @@ class Building: public PhysicsObject {
     public:
         Building(std::vector<Vector2> vertices, Color color);
         Building(std::vector<Vector2> vertices, Color color, Vector2 pos);
-        void render(Renderer::ResourceMap& resourceMap) override;
+        void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
 };
 
 namespace Hud {
@@ -147,7 +147,7 @@ namespace Hud {
             Renderer::Theme theme;
         public:
             Button(std::function<void()> onClick, std::string label, Vector2 pos, Vector2 size, int fontSize = 10, Renderer::Theme theme = Renderer::DEFAULT_TEHEME);
-            void render(Renderer::ResourceMap& resourceMap) override;
+            void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
     };
 
     class Label: public Renderer::Renderable {
@@ -159,6 +159,6 @@ namespace Hud {
             int fontSize;
         public:
             Label(std::string label, Vector2 pos, Color color, int fontSize = 10);
-            void render(Renderer::ResourceMap& resourceMap) override;
+            void render(Renderer::ResourceMap& resourceMap, bool flipped = false, bool effects = false) override;
     };
 }

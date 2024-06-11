@@ -22,7 +22,7 @@ class ResourceMap {
 
 class Renderable {
     public:
-    virtual void render(ResourceMap& resourceMap) = 0;
+    virtual void render(ResourceMap& resourceMap, bool flipped = false, bool effects = false) = 0;
     virtual ~Renderable() = default;
 };
 

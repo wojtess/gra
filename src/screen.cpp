@@ -4,6 +4,7 @@
 #include "rlgl.h"
 #include "raymath.h"
 #include "utils.h"
+#include <cmath>
 
 namespace Screen {
     void HomeScreen::render(Game& game) {
@@ -131,7 +132,21 @@ namespace Screen {
             }
             rlPushMatrix();
                 rlTranslatef(player->getPos().x, player->getPos().y, 0);
+
                 player->render(game.getResourceMap());
+
+                auto angle = -atan2(player->getLookingDirection().x, player->getLookingDirection().y) * 180/3.14 + 90;
+
+                rlRotatef(angle, 0.0f, 0.0f, 1.0f);
+                rlTranslatef(10, 0, 0);
+                
+                if(auto item = player->getSelectedItem()) {
+                    bool flipped = false;
+                    if(abs(angle) > 90)
+                        flipped = true;
+                    (*item)->render(game.getResourceMap(), flipped, true);
+                }
+
             rlPopMatrix();
         EndMode2D();
 

@@ -3,7 +3,7 @@
 
 namespace Items {
 
-    AbstractItem::Action::Action(float time, std::function<void()> callback): time(time), callback(callback ) {
+    AbstractItem::Action::Action(float time, std::function<void()> callback): time(time), callback(callback) {
         started = GetTime();
     }
 
@@ -33,13 +33,14 @@ namespace Items {
         return uses;
     }
 
-    GunItem::GunItem(float damage, int ammoCapacity, float reloadTime, float fireRate): AbstractItem(10.f), damage(damage), fireRate(fireRate), ammoCapacity(ammoCapacity), reloadTime(reloadTime) {
+    GunItem::GunItem(float damage, int ammoCapacity, float reloadTime, float fireRate, float pickupDistance): AbstractItem(pickupDistance), damage(damage), fireRate(fireRate), ammoCapacity(ammoCapacity), reloadTime(reloadTime) {
         uses = ammoCapacity;
         lastShootTime = GetTime();
     }
 
     GunItem::GunItem(float damage, int ammoCapacity, float reloadTime): AbstractItem(10.f), damage(damage), ammoCapacity(ammoCapacity), reloadTime(reloadTime) {
         uses = ammoCapacity;
+        lastShootTime = GetTime();
     }
 
     bool GunItem::shoot(std::shared_ptr<Entity::Zombie>& other) {
@@ -77,7 +78,7 @@ namespace Items {
         });
     }
 
-    void GunItem::render(Renderer::ResourceMap& resourceMap) {
+    void GunItem::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
         DrawCircleV(Vector2{0.f, 0.f}, 10.0f, GREEN);
     }
 
@@ -88,22 +89,31 @@ namespace Items {
     Pistol::Pistol(): GunItem(0.5f, 17, 0.5f) {
     }
 
-    void Pistol::render(Renderer::ResourceMap& resourceMap) {
-        DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+    void Pistol::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
+        // DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+        if(effects && GetTime() - lastShootTime <= 0.1f) {  
+            auto tex = resourceMap.getTexture("muzzle_flashs/m_1.png");
+            DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height * (flipped ? -1:1)}, Rectangle{10,0,16,16}, Vector2{8, 8}, 0.0f, WHITE);
+        }
         auto tex = resourceMap.getTexture("gun1.png");
-        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
+        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height * (flipped ? -1:1)}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
     }
 
-    AkMachineGun::AkMachineGun(): GunItem(2.5f, 30, 3.5f, 10.0f) {
+    AkMachineGun::AkMachineGun(): GunItem(2.5f, 30, 3.5f, 10.0f, 15.0f) {
     }
 
-    void AkMachineGun::render(Renderer::ResourceMap& resourceMap) {
-        DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+    void AkMachineGun::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
+        // DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+        if(effects && GetTime() - lastShootTime <= 0.05f) {  
+            auto tex = resourceMap.getTexture("muzzle_flashs/m_10.png");
+            DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height * (flipped ? -1:1)}, Rectangle{22,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
+        }
         auto tex = resourceMap.getTexture("ak47.png");
-        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
+        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height * (flipped ? -1:1)}, Rectangle{0,0,40,40}, Vector2{20, 20}, 0.0f, WHITE);
     }
 
     MedkitItem::MedkitItem(): AbstractItem(10.f) {
+        uses = 1;
     }
 
     void MedkitItem::use(std::shared_ptr<Entity::Player> player) {
@@ -114,9 +124,9 @@ namespace Items {
         player->getItems()[player->getSelctedItemIndex()] = std::shared_ptr<Items::AbstractItem>();
     }
 
-    void MedkitItem::render(Renderer::ResourceMap& resourceMap) {
-        DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
+    void MedkitItem::render(Renderer::ResourceMap& resourceMap, bool flipped, bool effects) {
+        // DrawCircleV(Vector2{0.f, 0.f}, 10.0f, Color{0, 0, 0, 40});
         auto tex = resourceMap.getTexture("med.png");
-        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
+        DrawTexturePro(tex, Rectangle{0,0,(float)tex.width,(float)tex.height * (flipped ? -1:1)}, Rectangle{0,0,20,20}, Vector2{10, 10}, 0.0f, WHITE);
     }
 }

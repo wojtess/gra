@@ -201,8 +201,15 @@ void PhysicsObject::tick(Game& game) {
 
     applyFrixion();
 
+
+    Vector2 checkingPos = {pos.x + vel.x * GetFrameTime(), pos.y + vel.y * GetFrameTime()};
+    if(checkingPos.x > MAX_X || checkingPos.x < MIN_X) {
+        vel.x = 0;
+    }
+    if(checkingPos.y > MAX_Y || checkingPos.y < MIN_Y) {
+        vel.y = 0;
+    }
     for(auto& shape:shapes) {
-        Vector2 checkingPos = {pos.x + vel.x * GetFrameTime(), pos.y + vel.y * GetFrameTime()};
         shape->setPos(checkingPos);
         for(auto& entity:game.getEntitys()) {
             if(entity.get() == this) {

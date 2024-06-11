@@ -13,13 +13,13 @@ namespace Screen {
         
         Hud::Button buttonExit([]() {
             exit(0);
-        }, "Exit", {20, 20}, {200, 100}, 20);
+        }, "Exit", {10, height - 110}, {200, 100}, 20);
 
         Hud::Button buttonPlay([&game]() {
             //START GAME
             game.newGame();
             game.setScreen(std::make_unique<Screen::GameScreen>());
-        }, "Play", {100, 100}, {200, 100}, 20);
+        }, "Play", {width/2 - 100, height/2 - 50}, {200, 100}, 20);
 
         Hud::Label name("zombieland", {width / 2.0f, 100}, Renderer::DEFAULT_TEHEME.getTextColor(), 20);
 

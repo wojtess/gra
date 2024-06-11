@@ -272,7 +272,9 @@ void Game::run() {
     rlImGuiShutdown();
     CloseWindow();
 }
+
 std::shared_ptr<Building> createBuilding(float size, Vector2 pos, Color color) {     return std::make_shared<Building>(std::vector<Vector2>{Vector2{0.0f + pos.x, 0.0f + pos.y}, Vector2{(100.1f * size) + pos.x, 0.0f + pos.y}, Vector2{(100.f * size) + pos.x, (100.1f * size) + pos.y}, Vector2{0.0f + pos.x, (100.0f * size) + pos.y}}, color); }
+
 void Game::newGame() {
     this->player = std::make_shared<Entity::Player>(Vector2{0.0f, 0.0f});
 
@@ -300,23 +302,11 @@ void Game::newGame() {
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(3.0f, Vector2{-700.0f, 800.0f}, GRAY)));
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(3.0f, Vector2{800.0f, -300.0f}, GRAY)));
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(2.0f, Vector2{-400.0f, 300.0f}, GRAY)));
-
-
-
-
-
-
-
-
-
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Building>(std::vector<Vector2>{Vector2{0.01f, 0.1f}, Vector2{200.0f, 0.0f}, Vector2{0.0f, 200.0f}}, BLUE)));
-
-    // entitys.push_back(std::static_pointer_cast<PhysicsObject>(std::make_shared<Entity::DropedItem>(std::make_unique<Items::AkMachineGun>(), Vector2{-100.0f, -100.0f})));
-
+    
     srand( time( NULL ) );
 
     //dodawanie losowych itemow
-    for(int i = 0;i < 10;i++) {
+    for(int i = 0;i <= ITEM_COUNT;i++) {
         std::shared_ptr<Items::GunItem> item;
         int r = rand() % 2;
         if(r == 1) {
@@ -324,7 +314,7 @@ void Game::newGame() {
         } else {
             item = std::make_shared<Items::Pistol>();
         }
-        auto nowyItemek = std::make_shared<Entity::DropedItem>(item, Vector2{(float)(rand() % 500 - 250), (float)(rand() % 500 - 250)});
+        auto nowyItemek = std::make_shared<Entity::DropedItem>(item, Vector2{(float)(rand() % (int)(MAX_X - MIN_X) + MIN_X), (float)(rand() % (int)(MAX_Y - MIN_Y) + MIN_Y)});
         bool kolizja = false;
         for(const auto& e:entitys) {
             if(nowyItemek->isColliding(e)) {

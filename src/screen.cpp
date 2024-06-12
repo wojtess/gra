@@ -17,8 +17,8 @@ namespace Screen {
 
         Hud::Button buttonPlay([&game]() {
             //START GAME
-            game.newGame();
             game.setScreen(std::make_unique<Screen::GameScreen>());
+            game.newGame();
         }, "Play", {width/2 - 100, height/2 - 50}, {200, 100}, 20);
 
         Hud::Label name("zombieland", {width / 2.0f, 100}, Renderer::DEFAULT_TEHEME.getTextColor(), 20);

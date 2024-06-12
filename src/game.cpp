@@ -281,7 +281,6 @@ void Game::run() {
 std::shared_ptr<Building> createBuilding(float size, Vector2 pos, Color color) {     return std::make_shared<Building>(std::vector<Vector2>{Vector2{0.0f + pos.x, 0.0f + pos.y}, Vector2{(100.1f * size) + pos.x, 0.0f + pos.y}, Vector2{(100.f * size) + pos.x, (100.1f * size) + pos.y}, Vector2{0.0f + pos.x, (100.0f * size) + pos.y}}, color); }
 
 void Game::newGame() {
-    printf("new gam\n");
     this->player = std::make_shared<Entity::Player>(Vector2{0.0f, 0.0f});
 
     entitys.push_back(std::static_pointer_cast<PhysicsObject>(createBuilding(1.0f, Vector2{50.0f, 50.0f}, GRAY)));
